@@ -45,25 +45,43 @@ CheckExit "Read Git remote"
 if ($Origin -notmatch '(?i)github\.com[:/]divyanshrathod35-cyber/GYM-WEBSITE-(\.git)?$') {
     throw "Unexpected Git repository: $Origin"
 }
-$TrackedChanges = @(& git.exe -C $Root status --porcelain --untracked-files=no)
+$OriginalRoot = $Root
+$IsolatedRelease = $false
+$TrackedChanges = @(& git.exe -C $OriginalRoot status --porcelain --untracked-files=no)
 CheckExit "Inspect tracked changes"
-if ($TrackedChanges.Count -gt 0) {
-    throw "Tracked local changes exist. Commit or back them up before pulling. Nothing was overwritten."
-}
-$Branch = (& git.exe -C $Root branch --show-current).Trim()
+$Branch = (& git.exe -C $OriginalRoot branch --show-current).Trim()
 CheckExit "Inspect current branch"
 if ($Branch -ne "main") {
     throw "Current branch is '$Branch', expected 'main'. Select main deliberately before rerunning."
 }
-& git.exe -C $Root fetch origin main
+& git.exe -C $OriginalRoot fetch origin main
 CheckExit "Fetch GitHub main"
-& git.exe -C $Root merge --ff-only origin/main
-CheckExit "Fast-forward GitHub main"
+if ($TrackedChanges.Count -gt 0) {
+    Write-Warning "Local tracked edits detected. They will NOT be discarded or included in the release."
+    $ChangedPaths = @(& git.exe -C $OriginalRoot diff --name-only HEAD)
+    CheckExit "Identify modified tracked paths"
+    Write-Host ("Preserved local paths: " + ($ChangedPaths -join ", "))
+    $Root = Join-Path $env:TEMP ("bodytech-clean-release-" + [guid]::NewGuid().ToString("N"))
+    if (Test-Path -LiteralPath $Root) {
+        throw "Temporary release path unexpectedly exists: $Root"
+    }
+    & git.exe -C $OriginalRoot worktree add --detach $Root origin/main
+    CheckExit "Create isolated clean release worktree"
+    $IsolatedRelease = $true
+    Write-Host ("Building the clean GitHub snapshot at: " + $Root)
+}
+else {
+    & git.exe -C $OriginalRoot merge --ff-only origin/main
+    CheckExit "Fast-forward GitHub main"
+}
 Set-Location -LiteralPath $Root
-$Commit = (& git.exe rev-parse HEAD).Trim()
-CheckExit "Read commit"
+$Commit = (& git.exe -C $Root rev-parse HEAD).Trim()
+CheckExit "Read release commit"
 Write-Host "Repository: $Repo"
 Write-Host "Commit: $Commit"
+if ($IsolatedRelease) {
+    Write-Host "The original checkout and its local modifications are untouched." -ForegroundColor Yellow
+}
 
 Banner "02 / Verify dependencies and run tests"
 if (-not (Test-Path -LiteralPath (Join-Path $Root "node_modules\typescript"))) {
@@ -171,3 +189,15 @@ Write-Host "URL: $LiveUrl"
 Write-Host "GitHub: https://github.com/$Repo"
 Write-Host "Commit: $Commit"
 Write-Host "Reminder: this is a pitch concept; verify pricing, hours, trials and imagery with owner."
+if ($IsolatedRelease) {
+    Set-Location -LiteralPath $OriginalRoot
+    if ($Root -like (Join-Path $env:TEMP "bodytech-clean-release-*")) {
+        & git.exe -C $OriginalRoot worktree remove --force $Root
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "Clean release workspace removed; your original edited files remain untouched." -ForegroundColor Green
+        }
+        else {
+            Write-Warning ("Temporary worktree cleanup did not succeed: " + $Root)
+        }
+    }
+}

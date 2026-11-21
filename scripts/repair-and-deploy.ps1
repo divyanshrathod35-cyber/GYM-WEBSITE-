@@ -34,6 +34,7 @@ function RequireCommand([string]$Command) {
 
 Banner "01 / Verify existing GitHub checkout"
 RequireCommand "git.exe"
+RequireCommand "node.exe"
 RequireCommand "npm.cmd"
 RequireCommand "vercel.cmd"
 if (-not (Test-Path -LiteralPath (Join-Path $Root ".git") -PathType Container)) {
@@ -111,74 +112,27 @@ if ($LinkConfig.projectId -ne $ExpectedProjectId) {
     throw "Safety stop: linked to project $($LinkConfig.projectId), expected $ExpectedProjectId."
 }
 
-Banner "05 / Package successful Vite build as Vercel static output"
-Write-Host "Bypassing Windows Vercel builder symlinks; using Build Output API v3."
+Banner "05 / Package verified Vite output with Node"
+Write-Host "Using a static Build Output API package, not the Windows symlink builder."
 & vercel.cmd pull --yes --environment production --scope $Team
 CheckExit "Pull production project settings"
-$DistPath = (Resolve-Path -LiteralPath (Join-Path $Root "dist")).Path
-$OutputPath = Join-Path $Root ".vercel\output"
-$StaticPath = Join-Path $OutputPath "static"
-$OutputConfig = Join-Path $OutputPath "config.json"
-if (Test-Path -LiteralPath $OutputPath) {
-    $OutputItem = Get-Item -LiteralPath $OutputPath -Force
-    if (($OutputItem.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
-        throw "Refusing to replace Vercel output because the directory is a junction or symlink."
-    }
-    Remove-Item -LiteralPath $OutputPath -Recurse -Force
+$PackageScript = Join-Path $Root "scripts\prepare-vercel-static.mjs"
+if (-not (Test-Path -LiteralPath $PackageScript -PathType Leaf)) {
+    throw "Static output packager is missing: $PackageScript"
 }
-New-Item -ItemType Directory -Path $StaticPath -Force | Out-Null
-$DistFiles = @(Get-ChildItem -LiteralPath $DistPath -Recurse -File -Force)
-if ($DistFiles.Count -lt 4) {
-    throw "Vite dist does not contain enough output files to publish."
+& node.exe $PackageScript
+CheckExit "Prepare Vercel static output"
+$OutputConfig = Join-Path $Root ".vercel\output\config.json"
+if (-not (Test-Path -LiteralPath $OutputConfig -PathType Leaf)) {
+    throw "Missing Vercel Build Output API config.json."
 }
-foreach ($File in $DistFiles) {
-    $RelativePath = $File.FullName.Substring($DistPath.Length + 1)
-    $TargetFile = Join-Path $StaticPath $RelativePath
-    $TargetFolder = Split-Path -Parent $TargetFile
-    if (-not (Test-Path -LiteralPath $TargetFolder)) {
-        New-Item -ItemType Directory -Path $TargetFolder -Force | Out-Null
-    }
-    Copy-Item -LiteralPath $File.FullName -Destination $TargetFile -Force
-}
-$Routes = @(
-    @{
-        src = "/(.*)"
-        headers = @{
-            "X-Content-Type-Options" = "nosniff"
-            "Referrer-Policy" = "strict-origin-when-cross-origin"
-            "X-Frame-Options" = "DENY"
-            "X-Robots-Tag" = "noindex, nofollow, noarchive"
-        }
-        'continue' = $true
-    },
-    @{ handle = "filesystem" },
-    @{ src = "/(.*)"; dest = "/index.html" }
-)
-$OutputManifest = @{ version = 3; routes = $Routes }
-$Json = $OutputManifest | ConvertTo-Json -Depth 10
-[System.IO.File]::WriteAllText(
-    $OutputConfig,
-    $Json,
-    (New-Object System.Text.UTF8Encoding($false))
-)
-$ParsedManifest = Get-Content -LiteralPath $OutputConfig -Raw | ConvertFrom-Json
-if ($ParsedManifest.version -ne 3) { throw "Invalid Vercel Build Output API version." }
-if (-not (Test-Path -LiteralPath (Join-Path $StaticPath "index.html") -PathType Leaf)) {
-    throw "Missing index.html from prepared Vercel static output."
-}
-foreach ($RequiredAsset in @("media\hero-strength.webp", "favicon.svg")) {
-    if (-not (Test-Path -LiteralPath (Join-Path $StaticPath $RequiredAsset) -PathType Leaf)) {
-        throw "Missing required static asset: $RequiredAsset"
-    }
-}
-Write-Host ("Static deployment staged: {0} files; no symlinks required." -f $DistFiles.Count) -ForegroundColor Green
 
 Banner "06 / Deploy prebuilt assets to production"
 $DeployOutput = @(& vercel.cmd deploy --prebuilt --prod --yes --scope $Team)
 $DeployExit = $LASTEXITCODE
 $DeployOutput | ForEach-Object { Write-Host $_ }
 if ($DeployExit -ne 0) {
-    throw "Vercel deployment was rejected (exit $DeployExit). Inspect account permissions or quota."
+    throw "Vercel rejected prebuilt deployment (exit $DeployExit). Check permissions and Hobby build-rate limit; no upgrade is performed."
 }
 $Urls = [regex]::Matches(($DeployOutput -join [Environment]::NewLine), 'https://[a-zA-Z0-9.-]+\.vercel\.app')
 if ($Urls.Count -lt 1) {

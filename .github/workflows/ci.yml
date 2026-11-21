@@ -19,3 +19,16 @@ jobs:
         run: npm run typecheck
       - name: Build production assets
         run: npm run build
+      - name: Validate Windows deployment PowerShell syntax
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile('scripts/repair-and-deploy.ps1', [ref]$tokens, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Error $_.Message }
+            exit 1
+          }
+      - name: Verify Vercel static Build Output API package
+        run: node scripts/prepare-vercel-static.mjs
+

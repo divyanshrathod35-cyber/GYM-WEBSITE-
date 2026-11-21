@@ -14,6 +14,7 @@ $Repo = "divyanshrathod35-cyber/GYM-WEBSITE-"
 $Team = "div-dev4"
 $ExpectedOrgId = "team_TrdKvpsgR5LN3FrRFOHaWspX"
 $Project = "bodytech-gym"
+$ExpectedProjectId = "prj_oN43vGId2xpMg7WMy9Pr9diNAFl1"
 $Root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..")).Path
 
 function Banner([string]$Message) {
@@ -106,17 +107,71 @@ $LinkConfig = Get-Content -LiteralPath $ConfigPath -Raw | ConvertFrom-Json
 if ($LinkConfig.orgId -ne $ExpectedOrgId) {
     throw "Safety stop: linked to $($LinkConfig.orgId), expected $ExpectedOrgId (DIV-DEV)."
 }
+if ($LinkConfig.projectId -ne $ExpectedProjectId) {
+    throw "Safety stop: linked to project $($LinkConfig.projectId), expected $ExpectedProjectId."
+}
 
-Banner "05 / Build for Vercel locally"
-Write-Host "Using vercel build --prod to reduce dependence on remote build capacity."
+Banner "05 / Package successful Vite build as Vercel static output"
+Write-Host "Bypassing Windows Vercel builder symlinks; using Build Output API v3."
 & vercel.cmd pull --yes --environment production --scope $Team
 CheckExit "Pull production project settings"
-& vercel.cmd build --prod --scope $Team
-CheckExit "Local Vercel production build"
-$OutputConfig = Join-Path $Root ".vercel\output\config.json"
-if (-not (Test-Path -LiteralPath $OutputConfig -PathType Leaf)) {
-    throw "Vercel local build did not produce .vercel\output\config.json."
+$DistPath = (Resolve-Path -LiteralPath (Join-Path $Root "dist")).Path
+$OutputPath = Join-Path $Root ".vercel\output"
+$StaticPath = Join-Path $OutputPath "static"
+$OutputConfig = Join-Path $OutputPath "config.json"
+if (Test-Path -LiteralPath $OutputPath) {
+    $OutputItem = Get-Item -LiteralPath $OutputPath -Force
+    if (($OutputItem.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
+        throw "Refusing to replace Vercel output because the directory is a junction or symlink."
+    }
+    Remove-Item -LiteralPath $OutputPath -Recurse -Force
 }
+New-Item -ItemType Directory -Path $StaticPath -Force | Out-Null
+$DistFiles = @(Get-ChildItem -LiteralPath $DistPath -Recurse -File -Force)
+if ($DistFiles.Count -lt 4) {
+    throw "Vite dist does not contain enough output files to publish."
+}
+foreach ($File in $DistFiles) {
+    $RelativePath = $File.FullName.Substring($DistPath.Length + 1)
+    $TargetFile = Join-Path $StaticPath $RelativePath
+    $TargetFolder = Split-Path -Parent $TargetFile
+    if (-not (Test-Path -LiteralPath $TargetFolder)) {
+        New-Item -ItemType Directory -Path $TargetFolder -Force | Out-Null
+    }
+    Copy-Item -LiteralPath $File.FullName -Destination $TargetFile -Force
+}
+$Routes = @(
+    @{
+        src = "/(.*)"
+        headers = @{
+            "X-Content-Type-Options" = "nosniff"
+            "Referrer-Policy" = "strict-origin-when-cross-origin"
+            "X-Frame-Options" = "DENY"
+            "X-Robots-Tag" = "noindex, nofollow, noarchive"
+        }
+        'continue' = $true
+    },
+    @{ handle = "filesystem" },
+    @{ src = "/(.*)"; dest = "/index.html" }
+)
+$OutputManifest = @{ version = 3; routes = $Routes }
+$Json = $OutputManifest | ConvertTo-Json -Depth 10
+[System.IO.File]::WriteAllText(
+    $OutputConfig,
+    $Json,
+    (New-Object System.Text.UTF8Encoding($false))
+)
+$ParsedManifest = Get-Content -LiteralPath $OutputConfig -Raw | ConvertFrom-Json
+if ($ParsedManifest.version -ne 3) { throw "Invalid Vercel Build Output API version." }
+if (-not (Test-Path -LiteralPath (Join-Path $StaticPath "index.html") -PathType Leaf)) {
+    throw "Missing index.html from prepared Vercel static output."
+}
+foreach ($RequiredAsset in @("media\hero-strength.webp", "favicon.svg")) {
+    if (-not (Test-Path -LiteralPath (Join-Path $StaticPath $RequiredAsset) -PathType Leaf)) {
+        throw "Missing required static asset: $RequiredAsset"
+    }
+}
+Write-Host ("Static deployment staged: {0} files; no symlinks required." -f $DistFiles.Count) -ForegroundColor Green
 
 Banner "06 / Deploy prebuilt assets to production"
 $DeployOutput = @(& vercel.cmd deploy --prebuilt --prod --yes --scope $Team)

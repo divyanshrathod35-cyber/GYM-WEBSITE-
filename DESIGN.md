@@ -51,3 +51,12 @@ One signature interaction: editorial scrollytelling with photo-scale parallax. S
 
 ### Commercial integrity
 Pricing is illustrative and owner-editable, never an official tariff. Three-day visit is a requested intro concept, not a confirmed free promotion. 6 AM, locations, directory rating and offerings come from external/user-provided snapshots and require owner confirmation. No fake reviews, trainer identities or transformation photos. Contact uses the provided WhatsApp number with a message only after the user explicitly clicks to send.
+
+
+### Supplemental benchmark review — Mobbin and 21st.dev (2026-11-21)
+This review uses their publicly accessible articles and component documentation, not a private Mobbin account or copied design-source libraries.
+
+- **Mobbin:** [Analysis of 1,460 onboarding flows](https://mobbin.com/blog/the-long-onboarding-a-study-of-1-460-flows) illustrates how personalization, useful outcomes, progress cues and a preview of the experience can make a complex journey coherent. That study concerns *apps* (not evidence of gym-site conversion lift). **Body Tech decision:** ask about the training goal early and reuse the answer to populate an enquiry; keep the actual contact form short. The optional health estimator stays behind progressive disclosure, not before the conversion CTA.
+- **21st.dev:** [Scroll Choreography](https://dev.21st.dev/@harshjadhavconnect/components/scroll-choreography) is a four-image-to-one-image motion example; [hero gallery components](https://21st.dev/community/components/explore/hero-section-components) provide visual studies of hierarchy and motion. **Body Tech decision:** retain one bespoke image-led scroll narrative, not four generic card tiles, a copied hero package, or constant full-screen transforms. All headline text must stay readable during animation.
+- **Scope and transferability:** Mobbin flows are app examples, and 21st.dev examples are community components. Neither demonstrates award-winning status, verified local conversion, or fitness-domain accessibility. Use these sources as interaction references only. No claim of proprietary access to Mobbin or license to reuse third-party component code is made.
+- **Acceptance gates:** desktop/tablet/mobile layout evidence, no accidental horizontal overflow, keyboard navigation, motion reduction, LCP measured on the deployed build, and click-through checks for WhatsApp and Google Maps. Pending until an actual deployment/build environment is available.

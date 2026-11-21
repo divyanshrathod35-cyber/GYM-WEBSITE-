@@ -1,12 +1,17 @@
-# Body Tech Gym — QA Evidence
+# BODY TECH GYM — QUALITY STATUS (2026-11-21)
 
-Tested locally on 2026-11-21:
-- JSX/TypeScript parser-level diagnostics via TypeScript `transpileModule`: 0 syntax errors for `src/App.tsx`.
-- CSS parse via PostCSS: valid syntax.
-- Product utilities derive from the previously tested release (phone/name checks, pricing math, wellness guardrails, WhatsApp URL encoding and SVG escaping). Re-run `npm test` after installing dependencies.
+## Verified
+- Six published media assets exist with proper WEBP signatures.
+- TypeScript JSX syntax parsed without diagnostics (the complete new App.tsx).
+- Custom CSS parsed successfully with PostCSS.
+- `node scripts/verify.mjs` passed locally after linking the installed global TypeScript package. It checks name/mobile sanitization, pricing, fitness safeguards, WhatsApp directions and escaping, pass-code formatting, media presence and JSX syntax.
+- The complete redesign files were committed to GitHub `main`; the linked public GitHub repository is `divyanshrathod35-cyber/GYM-WEBSITE-`.
 
-Pending checks and limits:
-- Full Vite build and typecheck require installing local dependencies; package download may be restricted in this environment. Do not claim a successful production build until `npm run build` passes.
-- Browser automated UI/a11y and cross-device testing to be recorded after executable build.
-- Vercel deployment still needs account permission; initial Vercel connector returned HTTP 403 for project creation.
-- Owner must approve actual facility imagery, programme statements, opening hours, promotions and prices before removing `noindex`.
+## NOT verified — do not claim otherwise
+- A clean dependency installation, TypeScript type-check and production Vite build could not run here: registry access timed out.
+- Chromium browser navigation was blocked by the environment for both `file://` and local HTTP preview. Desktop/tablet/mobile screenshots and measured overflow have not been verified.
+- Automated accessibility score and live conversion metrics have not been measured.
+- Vercel API returned **403 Forbidden** when asked to create or Git-link the new project, even after the GitHub push; no deployed Vercel URL exists from this operation.
+
+## Launch approval gate
+The business owner must confirm current hours, addresses, real pricing, trial availability, official logo/brand assets, and approve any campaign visuals. Generated imagery is not the actual gym. `noindex` is deliberately enabled for the pitch concept.

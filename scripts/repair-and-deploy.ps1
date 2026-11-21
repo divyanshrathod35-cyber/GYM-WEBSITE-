@@ -1,6 +1,6 @@
 #requires -Version 5.1
 <#
-BODY TECH GYM — Safe repair and production deployment.
+BODY TECH GYM - Safe repair and production deployment.
 Run from the existing repository:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\repair-and-deploy.ps1"
 
@@ -157,7 +157,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host ""
-Write-Host "BODY TECH GYM — PUBLIC DEPLOYMENT VERIFIED" -ForegroundColor Green
+Write-Host "BODY TECH GYM - PUBLIC DEPLOYMENT VERIFIED" -ForegroundColor Green
 Write-Host "URL: $LiveUrl"
 Write-Host "GitHub: https://github.com/$Repo"
 Write-Host "Commit: $Commit"

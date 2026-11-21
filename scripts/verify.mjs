@@ -50,10 +50,14 @@ try {
   assert(core.waLink('Hi & नमस्ते').includes('%26'));
   assert(core.directionsUrl('srishti').includes('Kamala%20College%20Road'));
   assert.equal(core.xmlEscape('<>&"\''), '&lt;&gt;&amp;&quot;&apos;');
-  for (const file of ['index.html', 'public/favicon.svg', 'public/athletic-fallback.svg', 'src/index.css', 'src/App.tsx']) {
+  for (const file of ['index.html', 'public/favicon.svg', 'src/index.css', 'src/App.tsx', ...Object.values(gymConfig.media).map(src => `public${src}`)]) {
     assert(fs.existsSync(path.join(projectRoot, file)), `Missing: ${file}`);
   }
-  console.log('PASS: input validation, price maths, calorie safeguards, share links, SVG escaping and assets');
+  const ui = fs.readFileSync(path.join(projectRoot, 'src/App.tsx'), 'utf8');
+  const jsx = ts.transpileModule(ui, { fileName: 'src/App.tsx', reportDiagnostics: true, compilerOptions: { jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2022 } });
+  assert.equal(jsx.diagnostics?.length ?? 0, 0, 'App.tsx must parse');
+  assert(ui.includes('prefers-reduced-motion') && ui.includes('aria-expanded') && ui.includes('aria-invalid'), 'Expected accessible interaction states');
+  console.log('PASS: input validation, pricing maths, calorie safeguards, share links, SVG escaping, media assets and JSX syntax');
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });
 }

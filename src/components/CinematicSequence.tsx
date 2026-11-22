@@ -1,93 +1,102 @@
 import { useRef } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 
-const cinema = [
+const chapters = [
   {
-    src: '/media/bodytech-editorial-strength.webp',
-    label: '01 / THE INTENTION',
-    headline: 'SHOW UP.',
-    subline: 'Your next chapter starts with the decision to begin.',
+    number: '01',
+    label: 'THE DECISION',
+    title: 'SHOW UP.',
+    description: 'Progress begins before the first rep. Start with the decision to show up.',
+    image: '/media/bodytech-editorial-strength.webp',
+    alt: 'Illustrative BODYTECH campaign image of an athlete preparing to lift, not a photograph of the actual gym.',
   },
   {
-    src: '/media/bodytech-editorial-power.webp',
-    label: '02 / THE EFFORT',
-    headline: 'DO THE WORK.',
-    subline: 'The small decisions become the bigger change.',
+    number: '02',
+    label: 'THE PRACTICE',
+    title: 'DO THE WORK.',
+    description: 'Strength is built through focused sessions, useful guidance and consistency.',
+    image: '/media/bodytech-editorial-power.webp',
+    alt: 'Illustrative BODYTECH athletic campaign concept, not a photograph of an actual club member.',
   },
   {
-    src: '/media/bodytech-editorial-recovery.webp',
-    label: '03 / THE RETURN',
-    headline: 'COME BACK.',
-    subline: 'Consistency deserves a place in your routine.',
+    number: '03',
+    label: 'THE RETURN',
+    title: 'COME BACK.',
+    description: 'The best routine is the one you can return to. Find your place to begin.',
+    image: '/media/bodytech-editorial-recovery.webp',
+    alt: 'Illustrative BODYTECH training campaign concept, not a photograph of Body Tech facilities.',
   },
-];
+] as const;
 
-/**
- * BODYTECH / A bespoke native-scroll, editorial film sequence.
- * No scroll hijacking, autoplay media, canvas rendering, or layout animation.
- * All creative imagery is labelled illustrative and must not imply real premises.
- */
-export default function CinematicSequence() {
+type Chapter = (typeof chapters)[number];
+
+function TrainingChapter({ chapter, index }: { chapter: Chapter; index: number }) {
   const section = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: section,
-    offset: ['start start', 'end end'],
+    offset: ['start end', 'end start'],
   });
-  const photographScale = useTransform(scrollYProgress, [0, 0.48, 1], [1.08, 1, 1.04]);
-  const numberShift = useTransform(scrollYProgress, [0, 1], [0, -155]);
-  const titleOne = useTransform(scrollYProgress, [0, 0.22, 0.32], [1, 1, 0]);
-  const titleTwo = useTransform(scrollYProgress, [0.30, 0.42, 0.67, 0.76], [0, 1, 1, 0]);
-  const titleThree = useTransform(scrollYProgress, [0.73, 0.85, 1], [0, 1, 1]);
-  const revealOne = useTransform(scrollYProgress, [0, .28, .39], [1, 1, 0]);
-  const revealTwo = useTransform(scrollYProgress, [.3, .44, .69, .79], [0, 1, 1, 0]);
-  const revealThree = useTransform(scrollYProgress, [.7, .86, 1], [0, 1, 1]);
-  const lineScale = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const imageScale = useTransform(scrollYProgress, [0, 1], [1.09, 1.035]);
+  const imageY = useTransform(scrollYProgress, [0, 1], [-12, 12]);
 
-  const images = [revealOne, revealTwo, revealThree];
-  const titles = [titleOne, titleTwo, titleThree];
   return (
-    <section className="bt-cinema" ref={section} aria-label="Body Tech training mindset: show up, do the work, come back">
-      <div className="bt-cinema-stage">
-        <div className="bt-cinema-north" aria-hidden="true">
-          <span>BODYTECH / ORIGINAL SERIES</span>
-          <span>RAJNANDGAON, CHHATTISGARH</span>
-        </div>
-        <div className="bt-cinema-visual">
-          {cinema.map((frame, index) => (
-            <motion.div
-              className={`bt-cinema-frame bt-cinema-frame-${index + 1}`}
-              key={frame.label}
-              style={reduceMotion ? undefined : { opacity: images[index], scale: photographScale }}
-            >
-              <img src={frame.src} alt={`Illustrative BODYTECH-branded athletic campaign concept ${index + 1}; not a photograph of Body Tech Gym, its employees or members`} loading="lazy" decoding="async" width="1500" height="860" />
-            </motion.div>
-          ))}
-          <div className="bt-cinema-shade" aria-hidden="true" />
-        </div>
-        <motion.span className="bt-cinema-giant" aria-hidden="true" style={reduceMotion ? undefined : { y: numberShift }}>BT.</motion.span>
-        <div className="bt-cinema-copy">
-          <span className="bt-cinema-kicker">THE PROCESS / 001 — 003</span>
-          <div className="bt-cinema-headlines">
-            {cinema.map((frame, index) => (
-              <motion.div
-                className={`bt-cinema-headline bt-cinema-headline-${index + 1}`}
-                key={frame.headline}
-                style={reduceMotion ? undefined : { opacity: titles[index] }}
-              >
-                <span className="bt-cinema-label">{frame.label}</span>
-                <h2>{frame.headline}</h2>
-                <p>{frame.subline}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-        <div className="bt-cinema-bottom">
-          <span>CAMPAIGN CONCEPT / NOT ACTUAL CLUB PHOTOGRAPHY</span>
-          <motion.div className="bt-cinema-progress" aria-hidden="true"><motion.i style={reduceMotion ? undefined : { scaleX: lineScale }} /></motion.div>
-          <a href="#visit">MAKE YOUR FIRST MOVE <span aria-hidden="true">↗</span></a>
-        </div>
+    <section
+      ref={section}
+      className={index === 1 ? 'bt-story-chapter bt-story-chapter--reverse' : 'bt-story-chapter'}
+      aria-labelledby={'bt-story-title-' + index}
+    >
+      <div className="bt-story-copy">
+        <span className="bt-story-index">{chapter.number} / 03 &nbsp; {chapter.label}</span>
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 30 }}
+          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.64, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <h2 id={'bt-story-title-' + index}>{chapter.title}</h2>
+          <p>{chapter.description}</p>
+          {index === 2 ? (
+            <a className="bt-story-link" href="#visit">
+              REQUEST YOUR FIRST VISIT <span aria-hidden="true">↗</span>
+            </a>
+          ) : (
+            <span className="bt-story-next" aria-hidden="true">THE PROCESS CONTINUES ↓</span>
+          )}
+        </motion.div>
       </div>
+      <figure className="bt-story-visual">
+        <motion.img
+          src={chapter.image}
+          alt={chapter.alt}
+          width={1500}
+          height={860}
+          loading="lazy"
+          decoding="async"
+          style={reduceMotion ? undefined : { scale: imageScale, y: imageY }}
+        />
+        <figcaption>BODYTECH ORIGINAL SERIES / CAMPAIGN CONCEPT</figcaption>
+      </figure>
+    </section>
+  );
+}
+
+/**
+ * BODYTECH editorial narrative: individual readable chapters in document flow.
+ * No superimposed headings, scroll locking, oversized decorative initials,
+ * or dependence on animation to access content.
+ */
+export default function CinematicSequence() {
+  return (
+    <section className="bt-story" aria-label="The Body Tech approach to training">
+      <header className="bt-story-intro">
+        <span>BODYTECH / THE TRAINING CULTURE</span>
+        <p>THREE DECISIONS. ONE DIRECTION.</p>
+      </header>
+      {chapters.map((chapter, index) => (
+        <TrainingChapter key={chapter.number} chapter={chapter} index={index} />
+      ))}
+      <div className="bt-story-outro" aria-hidden="true">THE WORK CONTINUES / BODYTECH</div>
     </section>
   );
 }

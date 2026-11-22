@@ -72,28 +72,172 @@ section[id] {scroll-margin-top:86px}
 .credible-band {background:var(--bone);color:var(--carbon)}
 .credible-track {padding-block:32px;gap:30px;font-size:clamp(21px,2.3vw,35px);letter-spacing:.015em;white-space:nowrap}
 .divider-diamond {background:var(--oxide);width:8px;height:8px}
-/* Signature scroll narrative. Motion only on compositor properties. */
-.bt-cinema {height:315svh;background:#121513;position:relative;color:var(--bone)}
-.bt-cinema-stage {height:100svh;min-height:650px;position:sticky;top:0;overflow:hidden;isolation:isolate;display:flex;flex-direction:column;padding:clamp(22px,3.4vw,54px) var(--pad)}
-.bt-cinema-visual {position:absolute;inset:0;z-index:-2;overflow:hidden;background:#252824}
-.bt-cinema-frame {position:absolute;inset:0;will-change:opacity,transform;transform-origin:center}
-.bt-cinema-frame img {width:100%;height:100%;object-fit:cover;object-position:64% center;display:block;filter:saturate(.78) contrast(1.08) brightness(.69)}
-.bt-cinema-frame-2,.bt-cinema-frame-3 {opacity:0}
-.bt-cinema-shade {position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,10,8,.85),rgba(7,10,8,.24) 72%),linear-gradient(0deg,rgba(7,10,8,.63),transparent 35%)}
-.bt-cinema-north {display:flex;justify-content:space-between;gap:25px;position:relative;z-index:3;font-size:11px;letter-spacing:.19em;font-weight:800;color:#EAE7DB}
-.bt-cinema-giant {font:900 clamp(280px,51vw,900px)/.72 var(--display);letter-spacing:-.09em;position:absolute;right:-5%;bottom:12%;color:rgba(255,255,255,.11);z-index:-1;pointer-events:none;white-space:nowrap}
-.bt-cinema-copy {flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
-.bt-cinema-kicker {font-size:11px;letter-spacing:.22em;font-weight:800;margin-bottom:28px;color:#E8DBCF}
-.bt-cinema-headlines {position:relative;min-height:clamp(255px,39vw,500px);max-width:1050px}
-.bt-cinema-headline {position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
-.bt-cinema-headline-2,.bt-cinema-headline-3 {opacity:0}
-.bt-cinema-label {font:800 11px var(--text);letter-spacing:.2em;margin-bottom:15px;color:#FFF}
-.bt-cinema-headline h2 {font:900 clamp(84px,13vw,220px)/.79 var(--display);letter-spacing:-.04em;margin:0 0 clamp(25px,3vw,45px);white-space:nowrap}
-.bt-cinema-headline p {font-size:clamp(15px,1.3vw,19px);line-height:1.6;max-width:420px;color:#F4EDE5}
-.bt-cinema-bottom {display:flex;align-items:center;justify-content:space-between;gap:25px;position:relative;z-index:3;font-size:11px;letter-spacing:.1em;font-weight:800}
-.bt-cinema-bottom>a {display:inline-flex;gap:18px;align-items:center;min-height:48px;border-bottom:1px solid currentColor}
-.bt-cinema-progress {height:2px;flex:1;max-width:170px;background:rgba(255,255,255,.3)}
-.bt-cinema-progress>i {display:block;height:100%;width:100%;background:var(--bone);transform-origin:left center;transform:scaleX(0)}
+/* The training culture: three real chapters with editorial image/text separation.
+   No absolute text, animated opacity stacks, or giant decorative glyphs. */
+.bt-story {
+  color: #f6f2e9;
+  background: #101411;
+  overflow: clip;
+}
+.bt-story-intro {
+  max-width: 1720px;
+  margin: 0 auto;
+  padding: 30px var(--pad);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid rgba(246,242,233,.22);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.5;
+  letter-spacing: .15em;
+}
+.bt-story-intro p {
+  margin: 0;
+  color: #bfc8be;
+  font-size: inherit;
+}
+.bt-story-chapter {
+  max-width: 1720px;
+  margin: 0 auto;
+  min-height: min(850px, 90svh);
+  padding: clamp(68px, 8vw, 136px) var(--pad);
+  display: grid;
+  grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+  gap: clamp(42px, 6.5vw, 118px);
+  align-items: center;
+  border-bottom: 1px solid rgba(246,242,233,.15);
+}
+.bt-story-copy {
+  min-width: 0;
+  max-width: 650px;
+}
+.bt-story-index {
+  display: block;
+  margin-bottom: clamp(36px, 6vw, 96px);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .15em;
+  line-height: 1.6;
+  color: #c6cfc5;
+}
+.bt-story-copy h2 {
+  max-width: 100%;
+  margin: 0 0 32px;
+  font: 900 clamp(66px, 7.5vw, 148px)/.9 var(--display);
+  letter-spacing: -.022em;
+  white-space: normal;
+  overflow-wrap: normal;
+  text-wrap: balance;
+}
+.bt-story-copy p {
+  max-width: 425px;
+  margin: 0 0 42px;
+  color: #d4d9d0;
+  font-size: clamp(16px, 1.22vw, 19px);
+  line-height: 1.75;
+}
+.bt-story-next {
+  display: inline-block;
+  color: #a5aea4;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+.bt-story-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 56px;
+  padding: 0 18px 0 22px;
+  background: var(--oxide);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  transition: background 180ms var(--ease);
+}
+.bt-story-link:hover { background: var(--oxide-dark); }
+.bt-story-visual {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  aspect-ratio: 4 / 5;
+  max-height: 740px;
+  margin: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: #252824;
+}
+.bt-story-visual img {
+  position: absolute;
+  inset: -5% 0;
+  width: 100%;
+  height: 110%;
+  display: block;
+  object-fit: cover;
+  object-position: 62% center;
+  transform-origin: 50% 50%;
+  filter: saturate(.78) contrast(1.04);
+}
+.bt-story-visual figcaption {
+  position: absolute;
+  bottom: 19px;
+  left: 19px;
+  right: 19px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.6);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.5;
+  letter-spacing: .1em;
+  text-shadow: 0 1px 9px rgba(0,0,0,.85);
+}
+.bt-story-chapter--reverse .bt-story-copy { grid-column: 2; grid-row: 1; }
+.bt-story-chapter--reverse .bt-story-visual { grid-column: 1; grid-row: 1; }
+.bt-story-outro {
+  max-width: 1720px;
+  margin: 0 auto;
+  padding: 26px var(--pad) 36px;
+  color: #aab3aa;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .13em;
+}
+@media(max-width: 1050px) {
+  .bt-story-chapter { min-height: 0; gap: 40px; }
+  .bt-story-copy h2 { font-size: clamp(56px, 8vw, 94px); }
+}
+@media(max-width: 760px) {
+  .bt-story-intro { flex-wrap: wrap; padding-top: 24px; padding-bottom: 24px; }
+  .bt-story-chapter {
+    grid-template-columns: minmax(0,1fr);
+    gap: 32px;
+    padding-block: 70px;
+  }
+  .bt-story-chapter--reverse .bt-story-copy,
+  .bt-story-chapter--reverse .bt-story-visual {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .bt-story-copy h2 { font-size: clamp(64px, 13vw, 102px); }
+  .bt-story-index { margin-bottom: 32px; }
+  .bt-story-copy p { margin-bottom: 30px; }
+  .bt-story-visual { aspect-ratio: 5 / 4; max-height: none; }
+}
+@media(max-width: 430px) {
+  .bt-story-copy h2 { font-size: clamp(56px, 13vw, 74px); }
+  .bt-story-chapter { padding-block: 58px; }
+  .bt-story-visual { aspect-ratio: 4 / 4.4; }
+}
+@media(prefers-reduced-motion: reduce) {
+  .bt-story-visual img { transform: none !important; }
+  .bt-story-link { transition: none; }
+}
+
 /* The manifesto is a deliberate quiet moment after the kinetic sequence. */
 .manifesto {background:var(--bone);padding:clamp(95px,12vw,210px) 0}
 .manifesto-top {font-size:11px;letter-spacing:.15em}
@@ -180,7 +324,6 @@ section[id] {scroll-margin-top:86px}
   .hero-art {grid-column:6/-1}
   .hero h1 {font-size:clamp(93px,12.5vw,160px)}
   .hero-side-note {display:none}
-  .bt-cinema-headline h2 {font-size:clamp(85px,12vw,150px)}
 }
 @media (max-width:800px) {
   .header {height:76px}
@@ -194,10 +337,6 @@ section[id] {scroll-margin-top:86px}
   .hero-prose {max-width:360px}
   .hero-footer span:last-child {display:none}
   .credible-track {overflow-x:auto;scrollbar-width:none;justify-content:flex-start}
-  .bt-cinema {height:250svh}
-  .bt-cinema-stage {height:100svh;min-height:590px}
-  .bt-cinema-headline h2 {font-size:clamp(78px,16vw,135px)}
-  .bt-cinema-headline p {font-size:16px}
   .manifesto h2 {font-size:clamp(79px,13vw,122px)}
   .manifesto-bottom {gap:45px}
   .programs-head h2 {font-size:clamp(90px,12vw,130px)}
@@ -229,22 +368,6 @@ section[id] {scroll-margin-top:86px}
   .hero-footer {font-size:9px;padding:20px 0;gap:16px}
   .credible-track {font-size:19px;padding-block:20px;gap:16px}
   .divider-diamond {width:5px;height:5px}
-  .bt-cinema {height:250svh}
-  .bt-cinema-stage {height:100svh;min-height:610px;padding:26px 20px}
-  .bt-cinema-north {font-size:9px;letter-spacing:.1em;gap:10px}
-  .bt-cinema-north span:last-child {text-align:right}
-  .bt-cinema-visual img {object-position:64% center}
-  .bt-cinema-shade {background:linear-gradient(0deg,rgba(7,10,8,.85),transparent 75%),linear-gradient(90deg,rgba(7,10,8,.57),transparent)}
-  .bt-cinema-giant {right:-18%;bottom:22%;font-size:400px}
-  .bt-cinema-headlines {min-height:310px}
-  .bt-cinema-kicker {font-size:9px;letter-spacing:.12em;margin-bottom:20px}
-  .bt-cinema-label {font-size:10px}
-  .bt-cinema-headline h2 {font-size:clamp(68px,18vw,98px);line-height:.82;white-space:normal;max-width:94vw}
-  .bt-cinema-headline p {font-size:15px;max-width:270px}
-  .bt-cinema-bottom {font-size:9px;align-items:flex-end}
-  .bt-cinema-bottom>a {min-height:44px;max-width:130px;gap:7px;text-align:right}
-  .bt-cinema-bottom>span {max-width:125px;line-height:1.55}
-  .bt-cinema-progress {display:none}
   .manifesto h2 {font-size:clamp(62px,13vw,100px);line-height:.86;margin-block:70px}
   .manifesto .underlined {white-space:normal}
   .manifesto-bottom {grid-template-columns:1fr;gap:35px}
@@ -263,13 +386,6 @@ section[id] {scroll-margin-top:86px}
 @media (prefers-reduced-motion:reduce) {
   html {scroll-behavior:auto}
   *,*::before,*::after {animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
-  .bt-cinema {height:auto;min-height:0}
-  .bt-cinema-stage {height:auto;min-height:610px;position:relative}
-  .bt-cinema-frame {opacity:0!important;transform:none!important;will-change:auto}
-  .bt-cinema-frame-1 {opacity:1!important}
-  .bt-cinema-headline {opacity:0!important}
-  .bt-cinema-headline-1 {opacity:1!important}
-  .bt-cinema-giant {transform:none!important}
 }
 /* Contrast corrections for existing owner's functional UI, not decorative overrides. */
 .program-info li {color:#343A34;border-bottom-color:#C8C0B3}
@@ -331,8 +447,4 @@ section[id] {scroll-margin-top:86px}
   }
 }
 @media (max-height: 680px) {
-  .bt-cinema-stage { min-height: 0; }
-  .bt-cinema-headlines { min-height: clamp(200px, 38svh, 280px); }
-  .bt-cinema-kicker { margin-bottom: 12px; }
-  .bt-cinema-headline h2 { font-size: clamp(60px, 12svh, 100px); }
 }

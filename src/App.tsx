@@ -73,7 +73,7 @@ function Hero() {
       <div className="bt-hero-main">
         <p className="bt-hero-pre">A PLACE TO TRAIN. A REASON TO RETURN.</p>
         <h1 id="bt-hero-title"><span>THE WORK</span><span>IS <em>YOURS.</em></span></h1>
-        <p className="bt-hero-description">More than a place to work out. Find the training rhythm that moves your everyday forward, right here in Rajnandgaon.</p>
+        <p className="bt-hero-description">Strength begins with a decision. Find your routine, train with intent, and keep showing up in Rajnandgaon.</p>
         <div className="bt-hero-actions">
           <a className="bt-button bt-button-dark" href="#visit">REQUEST A FIRST VISIT <Arrow diagonal /></a>
           <a className="bt-text-link" href="#training">EXPLORE TRAINING <Arrow /></a>
@@ -230,7 +230,7 @@ function FirstVisit({ chosenGoal, revision }: { chosenGoal: Goal; revision: numb
   return <section className="bt-visit bt-section" id="visit" aria-labelledby="bt-visit-title">
     <div className="bt-container">
       <div className="bt-section-label bt-section-label-light"><span>04 / BEGIN HERE</span><span>NO PAYMENT OR AUTOMATIC BOOKING</span></div>
-      <div className="bt-visit-heading"><Reveal><h2 id="bt-visit-title">MAKE YOUR<br /><em>FIRST MOVE.</em></h2></Reveal><p>One short enquiry. The Body Tech team confirms the details directly. No fake booking slots or surprise payments.</p></div>
+      <div className="bt-visit-heading"><Reveal><h2 id="bt-visit-title">MAKE YOUR<br /><em>FIRST MOVE.</em></h2></Reveal><p>Tell the gym what you're looking for. Confirm your preferred location, availability and current membership details before visiting.</p></div>
       <div className="bt-visit-grid">
         <div className="bt-visit-guidance">
           <span className="bt-overline">HOW THE FIRST VISIT WORKS</span>
@@ -384,7 +384,7 @@ function Footer() {
 function MobileAction() {
   return <div className="bt-mobile-action" aria-label="Quick contact actions"><a href={d.contact.tel}>CALL</a>
     <a href={waLink('Hello Body Tech Gym, I would like to enquire about joining.')} target="_blank" rel="noopener noreferrer">WHATSAPP</a>
-    <a href="#visit">FIRST VISIT <Arrow diagonal /></a></div>;
+    <a href="#visit" aria-label="Request your first visit">FIRST VISIT <Arrow diagonal /></a></div>;
 }
 
 export default function App() {

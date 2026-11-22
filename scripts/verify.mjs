@@ -57,7 +57,14 @@ try {
   const jsx = ts.transpileModule(ui, { fileName: 'src/App.tsx', reportDiagnostics: true, compilerOptions: { jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2022 } });
   assert.equal(jsx.diagnostics?.length ?? 0, 0, 'App.tsx must parse');
   assert(ui.includes('prefers-reduced-motion') && ui.includes('aria-expanded') && ui.includes('aria-invalid'), 'Expected accessible interaction states');
-  console.log('PASS: input validation, pricing maths, calorie safeguards, share links, SVG escaping, media assets and JSX syntax');
+  // Regression check: no more superimposed, absolutely-positioned animation headlines.
+  const cinema = fs.readFileSync(path.join(projectRoot, 'src/components/CinematicSequence.tsx'), 'utf8');
+  const flagship = fs.readFileSync(path.join(projectRoot, 'src/flagship.css'), 'utf8');
+  assert(cinema.includes('bt-story-chapter') && cinema.includes('bt-story-copy'), 'Editorial chapters must remain in normal document flow');
+  assert(!cinema.includes('bt-cinema-headline') && !cinema.includes('bt-cinema-giant'), 'Legacy overlapping cinematic layers cannot return');
+  assert(flagship.includes('.bt-story-chapter {') && flagship.includes('grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr)'), 'Responsive two-column narrative grid is required');
+  assert(!flagship.includes('.bt-cinema-headline {'), 'Legacy absolute headline styling must be removed');
+  console.log('PASS: input validation, pricing maths, calorie safeguards, share links, SVG escaping, media assets and JSX syntax, narrative layout regression');
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });
 }

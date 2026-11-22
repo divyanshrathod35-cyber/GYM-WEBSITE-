@@ -1,92 +1,405 @@
-import CinematicSequence from './components/CinematicSequence';
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { gymConfig, type Goal, type LocationId, type Months, type PlanType } from './config/gymConfig';
-import { directionsUrl, fitnessBlueprint, inr, planQuote, safeText, uniquePassCode, validFullName, validIndianMobile, waLink, xmlEscape, type Activity, type SexForEquation } from './lib/core';
+import { directionsUrl, fitnessBlueprint, inr, planQuote, safeText, validFullName, validIndianMobile, waLink, type Activity, type SexForEquation } from './lib/core';
 
 const d = gymConfig;
-const fast = [0.22, 1, 0.36, 1] as const;
-function IconArrow({ up = false }: { up?: boolean }) { return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="21" height="21"><path d={up ? 'M5 19 19 5M8 5h11v11' : 'M3 12h17m-6-6 6 6-6 6'} stroke="currentColor" strokeWidth="1.8" strokeLinecap="square" strokeLinejoin="miter" /></svg>; }
-function Eyebrow({ children, dark = false }: { children: ReactNode; dark?: boolean }) { return <span className={`label ${dark ? 'label-dark' : ''}`}><i aria-hidden="true" />{children}</span>; }
-function Reveal({ children, className = '', delay = 0 }: { children: ReactNode; className?: string; delay?: number }) { const reduce = useReducedMotion(); return <motion.div className={className} initial={reduce ? false : { opacity: 0, y: 35 }} whileInView={reduce ? undefined : { opacity: 1, y: 0 }} viewport={{ once: true, amount: .14 }} transition={{ duration: .78, delay, ease: fast }}>{children}</motion.div>; }
-function Asset({ src, alt, className = '', eager = false }: { src: string; alt: string; className?: string; eager?: boolean }) { return <img className={className} src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} fetchPriority={eager ? 'high' : 'auto'} decoding="async" />; }
-function Wordmark() { return <a href="#top" aria-label="Body Tech Gym, back to top" className="wordmark"><span className="wordmark-symbol" aria-hidden="true"><b>B</b><b>T</b></span><span className="wordmark-text"><strong>BODY<span>TECH</span></strong><small>RAJNANDGAON / 2011</small></span></a>; }
-const navigation: [string, string][] = [['The Club', '#club'], ['Training', '#training'], ['Membership', '#membership'], ['Visit', '#visit'], ['Find Us', '#find-us']];
+const ease = [0.22, 1, 0.36, 1] as const;
+
+function Arrow({ diagonal = false }: { diagonal?: boolean }) {
+  return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+    {diagonal ? <path d="M5 19 19 5M8 5h11v11" /> : <path d="M3 12h18m-7-7 7 7-7 7" />}
+  </svg>;
+}
+
+function Wordmark() {
+  return <a className="bt-brand" href="#top" aria-label="Body Tech Gym, back to top">
+    <span className="bt-brand-glyph" aria-hidden="true">BT<span>.</span></span>
+    <span className="bt-brand-name"><strong>BODY TECH</strong><small>TRAINING CULTURE / RAJNANDGAON</small></span>
+  </a>;
+}
+
+function Reveal({ children, className = '' }: { children: ReactNode; className?: string }) {
+  const reduced = useReducedMotion();
+  return <motion.div className={className} initial={reduced ? false : { opacity: 0, y: 28 }}
+    whileInView={reduced ? undefined : { opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.13 }}
+    transition={{ duration: 0.68, ease }}>{children}</motion.div>;
+}
+
+const links: [string, string][] = [
+  ['The club', '#club'], ['Training', '#training'], ['Membership', '#membership'], ['Locations', '#locations'],
+];
 
 function Header() {
-  const [menu, setMenu] = useState(false); const [pitch, setPitch] = useState(true);
-  useEffect(() => { if (!menu) return; const onEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') setMenu(false); }; window.addEventListener('keydown', onEscape); return () => window.removeEventListener('keydown', onEscape); }, [menu]);
-  return <>
-    {pitch && <div className="demo-ribbon"><span>BODY TECH / INDEPENDENT CONCEPT DESIGN BY DIVEX LABS · PRICING & TRIAL SUBJECT TO GYM APPROVAL</span><button onClick={() => setPitch(false)} aria-label="Hide demo ribbon">VIEW WITHOUT RIBBON <span aria-hidden="true">×</span></button></div>}
-    <header className="header" id="top"><div className="header-inner"><Wordmark /><nav className="nav-desktop" aria-label="Main navigation">{navigation.map(([name, id]) => <a href={id} key={id}>{name}</a>)}</nav><a className="header-action" href="#visit">REQUEST A VISIT <IconArrow up /></a><button className={`hamburger ${menu ? 'active' : ''}`} aria-label={menu ? 'Close menu' : 'Open menu'} aria-expanded={menu} aria-controls="mobile-menu" onClick={() => setMenu(!menu)}><span /><span /></button></div>
-      <AnimatePresence>{menu && <motion.nav id="mobile-menu" aria-label="Mobile navigation" className="mobile-menu" initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: .22 }}>{navigation.map(([name, id], i) => <a key={id} href={id} onClick={() => setMenu(false)}><span>0{i + 1}</span>{name}<IconArrow up /></a>)}</motion.nav>}</AnimatePresence>
-    </header>
-  </>;
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (!open) return;
+    const close = (event: KeyboardEvent) => { if (event.key === 'Escape') setOpen(false); };
+    window.addEventListener('keydown', close);
+    return () => window.removeEventListener('keydown', close);
+  }, [open]);
+  return <header className="bt-header" id="top">
+    <div className="bt-header-inner">
+      <Wordmark />
+      <nav className="bt-nav" aria-label="Main navigation">
+        {links.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
+      </nav>
+      <a className="bt-header-cta" href="#visit">YOUR FIRST VISIT <Arrow diagonal /></a>
+      <button className="bt-menu-trigger" type="button" aria-label={open ? 'Close navigation' : 'Open navigation'}
+        aria-expanded={open} aria-controls="bt-mobile-nav" onClick={() => setOpen(!open)}>
+        <span>{open ? 'CLOSE' : 'MENU'}</span><span className="bt-menu-lines" aria-hidden="true"><i /><i /></span>
+      </button>
+    </div>
+    <AnimatePresence>
+      {open && <motion.nav id="bt-mobile-nav" className="bt-mobile-nav" aria-label="Mobile navigation"
+        initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
+        transition={{ duration: 0.2 }}>
+        {links.map(([label, href], index) =>
+          <a href={href} key={href} onClick={() => setOpen(false)}><small>0{index + 1}</small>{label}<Arrow diagonal /></a>)}
+        <a href="#visit" className="bt-mobile-nav-cta" onClick={() => setOpen(false)}>REQUEST A VISIT <Arrow diagonal /></a>
+      </motion.nav>}
+    </AnimatePresence>
+  </header>;
 }
-function ScrollLine() { const { scrollYProgress } = useScroll(); const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]); return <motion.div aria-hidden="true" className="scroll-line" style={{ scaleX }} />; }
+
 function Hero() {
-  const ref = useRef<HTMLElement>(null); const reduce = useReducedMotion(); const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1.035, 1.22]); const y = useTransform(scrollYProgress, [0, 1], [0, 110]);
-  return <section className="hero" ref={ref} aria-labelledby="hero-title"><div className="hero-content">
-      <div className="hero-identity"><span className="dash" aria-hidden="true" /> AN INDEPENDENT TRAINING CLUB <span>RAJNANDGAON · C.G.</span></div>
-      <div className="hero-grid"><div className="hero-left"><p className="hero-overtitle">ESTABLISHED 2011 / BUILT ON CONSISTENCY</p><h1 id="hero-title"><span className="line"><motion.span initial={reduce ? false : { y: '110%' }} animate={{ y: '0%' }} transition={{ duration: 1, ease: fast }}>THE WORK</motion.span></span><span className="line"><motion.span initial={reduce ? false : { y: '110%' }} animate={{ y: '0%' }} transition={{ duration: 1.05, delay: .12, ease: fast }}>CHANGES</motion.span></span><span className="line line-outline"><motion.span initial={reduce ? false : { y: '110%' }} animate={{ y: '0%' }} transition={{ duration: 1.05, delay: .25, ease: fast }}>EVERYTHING.</motion.span></span></h1><div className="hero-bottom"><div><div className="hero-prose">Strength, movement and a place to keep showing up. For first-timers, regulars and everyone building their next chapter.</div><a className="cta" href="#visit"><span>REQUEST YOUR FIRST VISIT</span><span className="cta-symbol"><IconArrow up /></span></a></div><div className="hero-side-note">TRAIN FOR WHAT MATTERS.<br />RAJNANDGAON, INDIA.</div></div></div>
-      <div className="hero-art"><div className="hero-image-shell"><motion.div className="hero-image-move" style={reduce ? undefined : { scale: imageScale, y }}><Asset src={d.media.hero} eager alt="Illustrative campaign artwork showing an imagined modern strength gym; not a photograph of Body Tech Gym" /></motion.div><div className="hero-photo-vignette" /></div><div className="hero-vertical">DISCIPLINE HAS A DESTINATION&nbsp; / &nbsp;BT — 01</div><div className="hero-photo-bottom"><span><i /> TRAINING / IN MOTION</span><span>01 / 04</span></div><div className="hero-corner-mark" aria-hidden="true">BT.</div></div></div>
-      <div className="hero-footer"><span>SCROLL TO EXPLORE <span aria-hidden="true">↓</span></span><span>15 YEARS IN RAJNANDGAON</span><span>ALL BODIES. ALL STARTING POINTS.</span></div>
-    </div></section>;
+  const photo = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: photo, offset: ['start start', 'end start'] });
+  const photoY = useTransform(scrollYProgress, [0, 1], [0, 50]);
+  return <section className="bt-hero" aria-labelledby="bt-hero-title">
+    <div className="bt-hero-copy">
+      <div className="bt-kicker"><span className="bt-kicker-mark" /> BODY TECH GYM <span>RAJNANDGAON / INDIA</span></div>
+      <div className="bt-hero-main">
+        <p className="bt-hero-pre">A PLACE TO TRAIN. A REASON TO RETURN.</p>
+        <h1 id="bt-hero-title"><span>THE WORK</span><span>IS <em>YOURS.</em></span></h1>
+        <p className="bt-hero-description">More than a place to work out. Find the training rhythm that moves your everyday forward, right here in Rajnandgaon.</p>
+        <div className="bt-hero-actions">
+          <a className="bt-button bt-button-dark" href="#visit">REQUEST A FIRST VISIT <Arrow diagonal /></a>
+          <a className="bt-text-link" href="#training">EXPLORE TRAINING <Arrow /></a>
+        </div>
+      </div>
+      <div className="bt-hero-bottom"><span>RAJNANDGAON, CHHATTISGARH</span><span>SCROLL TO EXPLORE ↓</span></div>
+    </div>
+    <div className="bt-hero-photo" ref={photo}>
+      <motion.img src={d.media.hero} alt="Illustrative BODYTECH training campaign scene, not a photograph of the actual gym premises"
+        width="1200" height="1600" fetchPriority="high" decoding="async" style={reduce ? undefined : { y: photoY }} />
+      <div className="bt-hero-photo-top"><span>BT / TRAINING CULTURE</span><span>01 / 04</span></div>
+      <div className="bt-hero-photo-bottom"><span>BUILD THE HABIT.</span><span>CAMPAIGN VISUAL / CONCEPT</span></div>
+    </div>
+  </section>;
 }
-function CredibilityBand() { return <div className="credible-band" aria-label="Training options"><div className="credible-track"><span>STRENGTH</span><span className="divider-diamond" aria-hidden="true" /><span>CARDIO</span><span className="divider-diamond" aria-hidden="true" /><span>PERSONAL COACHING</span><span className="divider-diamond" aria-hidden="true" /><span>YOGA & AEROBICS</span><span className="divider-diamond" aria-hidden="true" /><span>TRAIN TOGETHER</span></div></div>; }
-function Manifesto() { return <section id="club" className="manifesto"><div className="manifesto-inner"><div className="manifesto-top"><Eyebrow dark>01 / THE CLUB</Eyebrow><span>NO SHORTCUTS. JUST A PLACE TO BEGIN.</span></div><Reveal><h2>IT ISN'T ABOUT<br /><em>WHERE YOU START.</em><br />IT'S ABOUT <span className="underlined">SHOWING UP.</span></h2></Reveal><div className="manifesto-bottom"><div className="manifesto-photo"><Asset src={d.media.performance} alt="Illustrative athletic campaign portrait with BODYTECH watermark, not an actual member" /><span className="asset-caption">ART DIRECTION 01 / CONCEPT IMAGERY</span></div><div className="manifesto-body"><div className="manifesto-index">B / T</div><p>Some come to get stronger. Some come to feel better. Some just need a starting point. The work looks different for everyone, and that’s exactly how it should be.</p><p>Body Tech has roots in Rajnandgaon stretching back to 2011. This is a digital concept for what a more useful first impression could look like.</p><a href="#training" className="editorial-link">DISCOVER YOUR TRAINING <IconArrow up /></a></div></div></div></section>; }
 
-type Program = { index: string; name: string; subtitle: string; kicker: string; text: string; includes: string[]; src: string; alt: string; goal: Goal };
-const programs: Program[] = [
- { index: '01', name: 'STRENGTH & CARDIO', subtitle: 'A stronger everyday.', kicker: 'THE FOUNDATION', text: 'Free weights, resistance training and cardio. Train with intention, whatever level you’re starting from.', includes: ['Strength floor', 'Cardiovascular conditioning', 'Beginner-friendly guidance enquiries'], src: d.media.facility, alt: 'Concept image of an equipped strength floor', goal: 'Muscle & Strength' },
- { index: '02', name: 'PERSONAL COACHING', subtitle: 'Good form. Real progress.', kicker: 'TRAIN WITH DIRECTION', text: 'Ask about goal-led personal training and a session structure that builds confidence before it builds intensity.', includes: ['Goal discussion', 'Movement guidance', 'Coaching availability on request'], src: d.media.coaching, alt: 'Concept image of a trainer guiding a client', goal: 'Beginner Kickstart' },
- { index: '03', name: 'YOGA & AEROBICS', subtitle: 'Movement that gives back.', kicker: 'BALANCE / ENERGY', text: 'Explore power yoga, movement and aerobics for a broader routine built around mobility and endurance.', includes: ['Yoga enquiries', 'Mobility work', 'Batch timetable on request'], src: d.media.mobility, alt: 'Concept image of a yoga class', goal: 'Power Yoga & Mobility' },
- { index: '04', name: 'COUPLES & TEAMS', subtitle: 'Better, together.', kicker: 'SHARED MOMENTUM', text: 'A workout routine is easier to return to when you share it. Ask about couples and corporate fitness options.', includes: ['Couple membership enquiries', 'Corporate wellness', 'Current terms on request'], src: d.media.couple, alt: 'Concept image of two gym members supporting each other', goal: 'Couple Fitness' }
+function Signal() {
+  return <div className="bt-signal" aria-label="Training philosophy">
+    <span>SHOW UP</span><i aria-hidden="true" /><span>MOVE WITH PURPOSE</span><i aria-hidden="true" /><span>KEEP GOING</span>
+  </div>;
+}
+
+function Club() {
+  return <section className="bt-club bt-section" id="club" aria-labelledby="bt-club-title">
+    <div className="bt-container">
+      <div className="bt-section-label"><span>01 / THE CLUB</span><span>BUILT AROUND REAL LIFE</span></div>
+      <div className="bt-club-intro">
+        <Reveal><h2 id="bt-club-title">STRENGTH IS<br /><em>A PRACTICE.</em><br />NOT A POSE.</h2></Reveal>
+        <div className="bt-club-aside"><p>There is no one right starting point. The only thing that matters is finding a routine you can return to.</p><a href="#training" className="bt-underlink">FIND YOUR TRAINING DIRECTION <Arrow diagonal /></a></div>
+      </div>
+      <div className="bt-club-gallery">
+        <figure className="bt-club-gallery-primary">
+          <img src={d.media.facility} alt="Illustrative strength training environment, not the real Body Tech premises" loading="lazy" decoding="async" width="800" height="1000" />
+          <figcaption>01 / THE PLACE FOR PROGRESS</figcaption>
+        </figure>
+        <div className="bt-club-gallery-editorial">
+          <span className="bt-club-big-index" aria-hidden="true">BT / 01</span>
+          <p>A first session. A better habit. A little more confidence every week. That's the kind of progress worth coming back for.</p>
+          <figure><img src={d.media.performance} loading="lazy" decoding="async" width="640" height="460"
+            alt="Illustrative BODYTECH athletic performance campaign portrait" /><figcaption>CAMPAIGN CONCEPT / NOT ACTUAL MEMBERS</figcaption></figure>
+        </div>
+      </div>
+    </div>
+  </section>;
+}
+
+type Programme = { number: string; title: string; eyebrow: string; short: string; details: string; points: string[]; image: string; alt: string; goal: Goal };
+const programmes: Programme[] = [
+  { number: '01', title: 'STRENGTH + CARDIO', eyebrow: 'FIND YOUR FOUNDATION', short: 'Build strength for every day.', details: 'Explore resistance training and conditioning with a focus on useful, repeatable progress.', points: ['Strength and resistance', 'Cardio conditioning', 'Getting started enquiries'], image: d.media.facility, alt: 'Illustrative strength and cardio studio', goal: 'Muscle & Strength' },
+  { number: '02', title: 'PERSONAL COACHING', eyebrow: 'MAKE EVERY REP COUNT', short: 'Direction makes a difference.', details: 'Ask about guidance tailored to your starting point, goals and trainer availability.', points: ['Goal conversations', 'Training guidance', 'Availability on request'], image: d.media.coaching, alt: 'Illustrative personal training coaching session', goal: 'Beginner Kickstart' },
+  { number: '03', title: 'YOGA + MOVEMENT', eyebrow: 'MOVE WITH INTENTION', short: 'Strength has more than one form.', details: 'Ask the gym about mobility, yoga and movement sessions at your preferred location.', points: ['Yoga and movement', 'Mobility exploration', 'Batch details on request'], image: d.media.mobility, alt: 'Illustrative yoga and mobility practice', goal: 'Power Yoga & Mobility' },
+  { number: '04', title: 'TRAIN TOGETHER', eyebrow: 'SHARED CONSISTENCY', short: 'A routine worth sharing.', details: 'Find out about couple training and shared fitness options before committing.', points: ['Couple enquiries', 'Shared training goals', 'Membership terms on request'], image: d.media.couple, alt: 'Illustrative couple exercising together', goal: 'Couple Fitness' },
 ];
-function Programs({ onGoal }: { onGoal: (g: Goal) => void }) {
-  const [active, setActive] = useState(0); const p = programs[active];
-  return <section className="programs" id="training"><div className="wide-container"><div className="programs-head"><Eyebrow>02 / THE TRAINING</Eyebrow><div><h2>FIND YOUR<br /><em>WAY IN.</em></h2><p>There is more than one way to train. Choose the part that feels right for you.</p></div></div><div className="programs-layout"><div className="program-rail" role="tablist" aria-label="Explore training programmes">{programs.map((item, i) => <button type="button" key={item.index} role="tab" id={`program-tab-${i}`} aria-controls="program-panel" aria-selected={active === i} className={`program-tab ${active === i ? 'selected' : ''}`} onClick={() => setActive(i)} onKeyDown={ev => { if (ev.key === 'ArrowDown' || ev.key === 'ArrowRight') { ev.preventDefault(); const next = (i + 1) % programs.length; setActive(next); document.getElementById(`program-tab-${next}`)?.focus(); } if (ev.key === 'ArrowUp' || ev.key === 'ArrowLeft') { ev.preventDefault(); const next = (i + programs.length - 1) % programs.length; setActive(next); document.getElementById(`program-tab-${next}`)?.focus(); } }}><span className="program-index">{item.index}</span><span>{item.name}</span><span className="program-tab-arrow"><IconArrow up /></span></button>)}</div><div id="program-panel" role="tabpanel" aria-labelledby={`program-tab-${active}`} className="program-stage"><AnimatePresence mode="wait"><motion.div key={p.index} className="program-stage-inner" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: .28, ease: fast }}><div className="program-photo"><Asset src={p.src} alt={p.alt} /><span>BODYTECH / TRAINING SERIES {p.index}</span></div><div className="program-info"><span className="meta">{p.kicker}</span><h3>{p.subtitle}</h3><p>{p.text}</p><ul>{p.includes.map(x => <li key={x}>{x}</li>)}</ul><button className="quiet-button" onClick={() => onGoal(p.goal)}>ENQUIRE ABOUT THIS PROGRAMME <IconArrow up /></button></div></motion.div></AnimatePresence></div></div><div className="programs-foot">MOVEMENT WITH MEANING <span>04 AREAS / ONE STARTING POINT</span></div></div></section>;
-}
-function Immersion() { const ref = useRef<HTMLElement>(null); const reduce = useReducedMotion(); const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] }); const scale = useTransform(scrollYProgress, [0, 1], [1.12, 1]); const y = useTransform(scrollYProgress, [0, 1], [-80, 80]); return <section ref={ref} className="immersion" aria-label="The training atmosphere"><div className="immersion-photo"><motion.div style={reduce ? undefined : { scale, y }}><Asset src={d.media.performance} alt="Concept fitness campaign imagery with BODYTECH watermark" /></motion.div></div><div className="immersion-text"><span>THE WORK / 002</span><h2>YOU DON'T<br />NEED TO BE<br /><em>READY.</em></h2><p>YOU JUST NEED A PLACE TO START.</p></div><span className="immersion-edge" aria-hidden="true">BODY TECH — RAJNANDGAON — SINCE 2011</span><span className="immersion-note">Illustrative concept photography</span></section>; }
 
-type TrialData = { name: string; phone: string; goal: Goal; location: LocationId; slot: string; code: string };
-function Trial({ prefilled, revision }: { prefilled: Goal; revision: number }) {
-  const [name, setName] = useState(''); const [phone, setPhone] = useState(''); const [goal, setGoal] = useState<Goal>(prefilled); const [slot, setSlot] = useState<string>(d.slots[0].id); const [location, setLocation] = useState<LocationId>('anupam'); const [errors, setErrors] = useState<{ name?: string; phone?: string }>({}); const [pass, setPass] = useState<TrialData | null>(null);
-  const nameId = useId(); const phoneId = useId(); const nameRef = useRef<HTMLInputElement>(null); const phoneRef = useRef<HTMLInputElement>(null);
-  useEffect(() => { if (revision > 0) { setGoal(prefilled); setPass(null); } }, [prefilled, revision]);
-  const submit = (e: FormEvent<HTMLFormElement>) => { e.preventDefault(); const n = safeText(name, 50); const digits = phone.replace(/\D/g, ''); const errs: typeof errors = {}; if (!validFullName(n)) errs.name = 'Please enter your full name.'; if (!validIndianMobile(digits)) errs.phone = 'Enter a valid 10-digit Indian mobile number.'; setErrors(errs); if (errs.name) { nameRef.current?.focus(); return; } if (errs.phone) { phoneRef.current?.focus(); return; } setPass({ name: n, phone: digits, goal, slot, location, code: uniquePassCode() }); };
-  function download() { if (!pass) return; const data = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 500"><rect width="920" height="500" fill="#101111"/><path d="M0 450H920" stroke="#B74230" stroke-width="18"/><text x="55" y="90" fill="#F3F0E8" font-size="38" font-weight="900" font-family="Arial">BODYTECH / RAJNANDGAON</text><text x="55" y="162" fill="#B9BDB8" font-size="22" font-family="Arial">FIRST VISIT ENQUIRY · CONCEPT PASS</text><text x="55" y="255" fill="#F3F0E8" font-size="52" font-weight="700" font-family="Arial">${xmlEscape(pass.name)}</text><text x="55" y="317" fill="#E7C5BB" font-size="24" font-family="Arial">${xmlEscape(pass.goal)}</text><text x="55" y="367" fill="#F3F0E8" font-size="24" font-family="Arial">${xmlEscape(pass.code)}</text><text x="55" y="415" fill="#AEB4B0" font-size="17" font-family="Arial">Request only · Not a confirmed booking or free entry · Owner approval needed</text></svg>`; const url = URL.createObjectURL(new Blob([data], { type: 'image/svg+xml;charset=utf-8' })); const a = document.createElement('a'); a.href = url; a.download = `${pass.code}.svg`; a.click(); window.setTimeout(() => URL.revokeObjectURL(url), 500); }
-  const message = pass ? `Hello Body Tech Gym. I'd like to enquire about a first visit. Name: ${pass.name}; Mobile: ${pass.phone}; Goal: ${pass.goal}; Preferred time: ${d.slots.find(x => x.id === pass.slot)?.label}; Listed location: ${d.locations.find(x => x.id === pass.location)?.short}; Request reference: ${pass.code}. Please confirm eligibility, any applicable cost and availability.` : '';
-  return <section className="visit" id="visit"><div className="wide-container"><div className="visit-heading"><Eyebrow>03 / YOUR FIRST MOVE</Eyebrow><h2>START WITH<br /><em>A CONVERSATION.</em></h2><p>Tell the team what you're working towards. A visit, coaching session or trial can be discussed directly with the gym.</p></div><div className="visit-grid"><div className="visit-guidance"><span className="vertical-index">THE FIRST THREE DAYS / CONCEPT JOURNEY</span><div className="days-list"><div><span>DAY 01</span><strong>Get your bearings.</strong><p>Talk goals, ask questions and explore the environment.</p></div><div><span>DAY 02</span><strong>Find your rhythm.</strong><p>Ask about suitable training formats and coaching.</p></div><div><span>DAY 03</span><strong>Make a plan.</strong><p>Discuss a practical routine and appropriate membership.</p></div></div><div className="guided-note">These are suggested steps for the pitch concept, not a confirmed three-day offer.</div></div><div className="visit-form-wrap"><div className="form-header"><span>FIRST VISIT / REQUEST</span><span>01—05</span></div>{!pass ? <form className="visit-form" onSubmit={submit} noValidate><div className="field"><label htmlFor={nameId}>FULL NAME <span>*</span></label><input ref={nameRef} id={nameId} placeholder="Your full name" autoComplete="name" maxLength={60} value={name} aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? `${nameId}-error` : undefined} onChange={e => { setName(e.target.value); setErrors(x => ({ ...x, name: undefined })); }} />{errors.name && <small className="field-error" id={`${nameId}-error`} role="alert">{errors.name}</small>}</div><div className="field"><label htmlFor={phoneId}>MOBILE NUMBER <span>*</span></label><div className="phone-input"><span>+91</span><input ref={phoneRef} id={phoneId} type="tel" inputMode="numeric" autoComplete="tel-national" placeholder="10-digit mobile" maxLength={10} value={phone} aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? `${phoneId}-error` : undefined} onChange={e => { setPhone(e.target.value.replace(/\D/g, '').slice(0, 10)); setErrors(x => ({ ...x, phone: undefined })); }} /></div>{errors.phone && <small className="field-error" id={`${phoneId}-error`} role="alert">{errors.phone}</small>}</div><div className="field"><label htmlFor="visit-goal">YOUR GOAL</label><select id="visit-goal" value={goal} onChange={e => setGoal(e.target.value as Goal)}>{d.goals.map(g => <option key={g}>{g}</option>)}</select></div><div className="field-row"><div className="field"><label htmlFor="visit-time">PREFERRED TIME</label><select id="visit-time" value={slot} onChange={e => setSlot(e.target.value)}>{d.slots.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}</select></div><div className="field"><label htmlFor="visit-location">LISTED LOCATION</label><select id="visit-location" value={location} onChange={e => setLocation(e.target.value as LocationId)}>{d.locations.map(l => <option key={l.id} value={l.id}>{l.short}</option>)}</select></div></div><p className="form-privacy">No details are sent to our servers. You review the request and send it yourself through WhatsApp. Nothing is booked until the gym confirms.</p><button className="cta cta-form" type="submit"><span>CREATE MY VISIT REQUEST</span><span className="cta-symbol"><IconArrow up /></span></button></form> : <div className="request-confirmation" aria-live="polite"><Eyebrow>YOUR REQUEST IS READY</Eyebrow><div className="pass-code">{pass.code}</div><h3>{pass.name}</h3><div className="pass-details"><span>{pass.goal}</span><span>{d.locations.find(l => l.id === pass.location)?.short}</span><span>{d.slots.find(s => s.id === pass.slot)?.label}</span></div><p>This is an enquiry reference, not an admission pass. The gym will confirm arrangements directly.</p><a className="cta cta-form" href={waLink(message)} target="_blank" rel="noopener noreferrer"><span>SEND REQUEST ON WHATSAPP</span><span className="cta-symbol"><IconArrow up /></span></a><div className="pass-links"><button type="button" onClick={download}>DOWNLOAD REQUEST CARD ↗</button><button type="button" onClick={() => setPass(null)}>EDIT REQUEST ↗</button></div></div>}</div></div></div></section>;
+function Training({ onGoal }: { onGoal: (goal: Goal) => void }) {
+  const [active, setActive] = useState(0);
+  const selected = programmes[active];
+  const reduced = useReducedMotion();
+  return <section className="bt-training bt-section" id="training" aria-labelledby="bt-training-title">
+    <div className="bt-container">
+      <div className="bt-section-label bt-section-label-light"><span>02 / TRAIN YOUR WAY</span><span>THE RIGHT START IS YOURS TO CHOOSE</span></div>
+      <div className="bt-training-heading"><Reveal><h2 id="bt-training-title">BUILT FOR<br /><em>YOUR KIND OF</em> STRONG.</h2></Reveal><p>Choose a direction. Ask the team what’s available before you commit.</p></div>
+      <div className="bt-programme-grid">
+        <div className="bt-programme-tabs" role="tablist" aria-label="Explore training areas">
+          {programmes.map((p, index) => <button type="button" role="tab" id={'bt-tab-' + index} key={p.number}
+            aria-controls="bt-programme-panel" aria-selected={active === index} tabIndex={active === index ? 0 : -1}
+            className={active === index ? 'bt-programme-tab active' : 'bt-programme-tab'}
+            onClick={() => setActive(index)}
+            onKeyDown={event => {
+              let next = index;
+              if (event.key === 'ArrowDown' || event.key === 'ArrowRight') next = (index + 1) % programmes.length;
+              else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') next = (index + programmes.length - 1) % programmes.length;
+              else if (event.key === 'Home') next = 0;
+              else if (event.key === 'End') next = programmes.length - 1;
+              else return;
+              event.preventDefault(); setActive(next); document.getElementById('bt-tab-' + next)?.focus();
+            }}><span className="bt-programme-num">{p.number}</span><span className="bt-programme-name">{p.title}</span><span className="bt-programme-tab-arrow"><Arrow diagonal /></span></button>)}
+        </div>
+        <div className="bt-programme-stage" role="tabpanel" id="bt-programme-panel" aria-labelledby={'bt-tab-' + active} tabIndex={0}>
+          <AnimatePresence mode="wait">
+            <motion.div key={selected.number} className="bt-programme-scene"
+              initial={reduced ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+              exit={reduced ? undefined : { opacity: 0, y: -10 }} transition={{ duration: 0.24, ease }}>
+              <div className="bt-programme-photo"><img src={selected.image} alt={selected.alt + ' — conceptual imagery, not a verified Body Tech photograph'}
+                width="800" height="960" decoding="async" loading="lazy" /><span>BODYTECH / TRAINING STUDIES {selected.number}</span></div>
+              <div className="bt-programme-detail">
+                <span className="bt-overline">{selected.eyebrow}</span>
+                <h3>{selected.short}</h3>
+                <p>{selected.details}</p>
+                <ul>{selected.points.map(point => <li key={point}>{point}</li>)}</ul>
+                <button type="button" onClick={() => onGoal(selected.goal)} className="bt-underlink">ASK ABOUT THIS TRAINING <Arrow diagonal /></button>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+    </div>
+  </section>;
 }
 
-const monthsList: Months[] = [1, 3, 6, 12];
+function Story() {
+  const stage = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: stage, offset: ['start end', 'end start'] });
+  const imageScale = useTransform(scrollYProgress, [0, 1], [1.12, 1]);
+  return <section className="bt-story bt-section" aria-labelledby="bt-story-title">
+    <div className="bt-container">
+      <div className="bt-section-label"><span>03 / THE MINDSET</span><span>A ROUTINE, NOT A REINVENTION</span></div>
+      <Reveal><h2 id="bt-story-title">YOU DON'T HAVE<br />TO BE READY.<br /><em>JUST BEGIN.</em></h2></Reveal>
+      <div className="bt-story-grid">
+        <div className="bt-story-main-photo" ref={stage}>
+          <motion.img src={d.media.performance} loading="lazy" decoding="async" width="900" height="1200"
+            alt="Illustrative athletic campaign portrait representing effort and training"
+            style={reduced ? undefined : { scale: imageScale }} />
+          <span>BODYTECH CAMPAIGN / CONCEPT VISUAL 03</span>
+        </div>
+        <div className="bt-story-side">
+          <span className="bt-story-side-number">03 / 03</span>
+          <p>We don't believe every fitness journey needs a dramatic beginning. Sometimes it starts with a simple question: when can I come in?</p>
+          <a className="bt-button bt-button-dark" href="#visit">TAKE THE FIRST STEP <Arrow diagonal /></a>
+          <figure><img src={d.media.couple} loading="lazy" decoding="async" width="700" height="600"
+            alt="Illustrative BODYTECH campaign showing people training together" /><figcaption>TRAINING TOGETHER / CONCEPT IMAGERY</figcaption></figure>
+        </div>
+      </div>
+    </div>
+  </section>;
+}
+
+function FirstVisit({ chosenGoal, revision }: { chosenGoal: Goal; revision: number }) {
+  const nameId = useId(); const phoneId = useId();
+  const [name, setName] = useState(''); const [phone, setPhone] = useState('');
+  const [goal, setGoal] = useState<Goal>(chosenGoal);
+  const [location, setLocation] = useState<LocationId>('anupam');
+  const [slot, setSlot] = useState<string>('morning');
+  const [errors, setErrors] = useState<{name?: string; phone?: string}>({});
+  const [message, setMessage] = useState<string | null>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
+  useEffect(() => { if (revision > 0) { setGoal(chosenGoal); setMessage(null); } }, [chosenGoal, revision]);
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const cleanName = safeText(name, 50);
+    const digits = phone.replace(/\D/g, '');
+    const nextErrors: typeof errors = {};
+    if (!validFullName(cleanName)) nextErrors.name = 'Please enter your full name.';
+    if (!validIndianMobile(digits)) nextErrors.phone = 'Enter a valid 10-digit Indian mobile number.';
+    setErrors(nextErrors);
+    if (nextErrors.name) { nameRef.current?.focus(); return; }
+    if (nextErrors.phone) { phoneRef.current?.focus(); return; }
+    const selected = d.locations.find(item => item.id === location);
+    const time = d.slots.find(item => item.id === slot);
+    setMessage('Hello Body Tech Gym. My name is ' + cleanName + '. I would like to enquire about my first visit. Phone: +91 ' + digits + '. Training goal: ' + goal + '. Preferred location: ' + (selected?.short ?? 'Please advise') + '. Time preference: ' + (time?.label ?? 'Please advise') + '. Please confirm availability, pricing and any applicable terms.');
+  };
+  return <section className="bt-visit bt-section" id="visit" aria-labelledby="bt-visit-title">
+    <div className="bt-container">
+      <div className="bt-section-label bt-section-label-light"><span>04 / BEGIN HERE</span><span>NO PAYMENT OR AUTOMATIC BOOKING</span></div>
+      <div className="bt-visit-heading"><Reveal><h2 id="bt-visit-title">MAKE YOUR<br /><em>FIRST MOVE.</em></h2></Reveal><p>One short enquiry. The Body Tech team confirms the details directly. No fake booking slots or surprise payments.</p></div>
+      <div className="bt-visit-grid">
+        <div className="bt-visit-guidance">
+          <span className="bt-overline">HOW THE FIRST VISIT WORKS</span>
+          <ol>
+            <li><span>01</span><div><strong>SHARE YOUR DIRECTION</strong><p>Tell us what you want to work toward.</p></div></li>
+            <li><span>02</span><div><strong>TALK TO THE GYM</strong><p>Send your prepared enquiry through WhatsApp.</p></div></li>
+            <li><span>03</span><div><strong>VISIT WHEN CONFIRMED</strong><p>Confirm the branch, timings and current terms before arriving.</p></div></li>
+          </ol>
+          <p className="bt-visit-truth">This website is an independent presentation concept. Training availability, pricing and any introductory offers require confirmation from the gym.</p>
+        </div>
+        <div className="bt-form-pane">
+          <div className="bt-form-title"><strong>YOUR VISIT REQUEST</strong><span>01 / 01</span></div>
+          {message ? <div className="bt-message-ready" role="status" aria-live="polite">
+            <span className="bt-overline">YOUR MESSAGE IS READY</span>
+            <h3>ONE LAST STEP.</h3>
+            <p>Your enquiry has not been sent yet. Tap below to open WhatsApp and send it to the gym.</p>
+            <a className="bt-button bt-button-acid" href={waLink(message)} target="_blank" rel="noopener noreferrer">OPEN WHATSAPP <Arrow diagonal /></a>
+            <button type="button" className="bt-underlink" onClick={() => setMessage(null)}>EDIT MY DETAILS <Arrow /></button>
+          </div> : <form className="bt-visit-form" onSubmit={submit} noValidate>
+            <div className="bt-field"><label htmlFor={nameId}>FULL NAME <span>*</span></label><input id={nameId} ref={nameRef} required
+              autoComplete="name" value={name} onChange={e => setName(e.target.value)} placeholder="Your full name"
+              aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? nameId + '-error' : undefined} />
+              {errors.name && <small id={nameId + '-error'} className="bt-field-error">{errors.name}</small>}</div>
+            <div className="bt-field"><label htmlFor={phoneId}>MOBILE NUMBER <span>*</span></label><div className="bt-phone-field">
+              <span>+91</span><input id={phoneId} ref={phoneRef} required inputMode="numeric" autoComplete="tel-national"
+                value={phone} onChange={e => setPhone(e.target.value)} placeholder="10-digit mobile" maxLength={14}
+                aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? phoneId + '-error' : undefined} /></div>
+              {errors.phone && <small id={phoneId + '-error'} className="bt-field-error">{errors.phone}</small>}</div>
+            <div className="bt-field bt-field-row"><label>YOUR TRAINING FOCUS
+              <select value={goal} onChange={e => setGoal(e.target.value as Goal)}>{d.goals.map(item => <option key={item} value={item}>{item}</option>)}</select></label>
+              <label>PREFERRED LOCATION<select value={location} onChange={e => setLocation(e.target.value as LocationId)}>
+                {d.locations.map(item => <option key={item.id} value={item.id}>{item.short}</option>)}</select></label></div>
+            <div className="bt-field"><label htmlFor="bt-slot">PREFERRED TIME</label><select id="bt-slot" value={slot} onChange={e => setSlot(e.target.value)}>
+              {d.slots.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}</select></div>
+            <p className="bt-form-privacy">We do not store your form details on this website. You review and send your own message through WhatsApp.</p>
+            <button className="bt-button bt-button-acid bt-submit" type="submit">PREPARE MY ENQUIRY <Arrow diagonal /></button>
+          </form>}
+        </div>
+      </div>
+    </div>
+  </section>;
+}
+
 function Membership() {
-  const [type, setType] = useState<PlanType>('individual'); const [months, setMonths] = useState<Months>(3); const [trainer, setTrainer] = useState(false); const quote = planQuote(type, months, trainer);
-  const message = `Hello Body Tech Gym. Please confirm the current membership price and availability for the ${type === 'couple' ? 'couple' : 'individual'} plan, ${months} month(s)${trainer ? ', with personal training enquiry' : ''}. I saw an illustrative website estimate of ${inr(quote.total)}, but understand this is not an official rate.`;
-  return <section className="membership" id="membership"><div className="wide-container"><div className="membership-title"><Eyebrow dark>04 / THE MEMBERSHIP</Eyebrow><h2>MAKE ROOM<br />FOR <em>PROGRESS.</em></h2><p>Compare a few example membership structures. The actual Body Tech Gym tariff must be confirmed with the team.</p></div><div className="membership-grid"><div className="membership-controls"><div className="control-heading">01 <span>WHO'S TRAINING?</span></div><div className="segmented" role="group" aria-label="Membership type"><button className={type === 'individual' ? 'active' : ''} onClick={() => setType('individual')} aria-pressed={type === 'individual'}>JUST ME</button><button className={type === 'couple' ? 'active' : ''} onClick={() => setType('couple')} aria-pressed={type === 'couple'}>WE'RE TWO</button></div><div className="control-heading">02 <span>YOUR DURATION</span></div><div className="duration-choices">{monthsList.map(m => <button key={m} aria-pressed={months === m} className={months === m ? 'active' : ''} onClick={() => setMonths(m)}><strong>{String(m).padStart(2, '0')}</strong><span>{m === 1 ? 'MONTH' : 'MONTHS'}</span></button>)}</div><label className="trainer-toggle"><span><strong>PERSONAL COACHING ENQUIRY</strong><small>Illustrative monthly add-on</small></span><input type="checkbox" checked={trainer} onChange={e => setTrainer(e.target.checked)} /><span className="switch" aria-hidden="true" /></label><p className="demo-disclaimer">ALL FIGURES ARE DEMONSTRATION AMOUNTS, NOT OFFICIAL BODY TECH PRICES.</p></div><div className="price-result" aria-live="polite"><div className="price-top"><span>YOUR ILLUSTRATIVE PLAN</span><span>DEMO / INR</span></div><span className="price-category">{type === 'couple' ? 'COUPLE TRAINING' : 'INDIVIDUAL TRAINING'} / {months} MONTH{months > 1 ? 'S' : ''}</span><div className="price-big">{inr(quote.total)}</div><div className="price-rule" /><div className="price-stats"><div><strong>{inr(Math.ceil(quote.daily))}</strong><span>EQUIVALENT / DAY*</span></div><div><strong>{quote.savingsPercentage}%</strong><span>DEMO SAVING VS MONTHLY*</span></div></div><p>*Illustrative calculations use approximate days per duration. Does not constitute a quote, discount or guaranteed saving.</p><a className="price-cta" href={waLink(message)} target="_blank" rel="noopener noreferrer">ASK FOR THE REAL PRICE <IconArrow up /></a></div></div></div></section>;
+  const [type, setType] = useState<PlanType>('individual');
+  const [months, setMonths] = useState<Months>(3);
+  const [coach, setCoach] = useState(false);
+  const quote = planQuote(type, months, coach);
+  return <section className="bt-membership bt-section" id="membership" aria-labelledby="bt-membership-title">
+    <div className="bt-container">
+      <div className="bt-section-label"><span>05 / MEMBERSHIP EXPLORER</span><span>ESTIMATES ONLY / NOT OFFICIAL FEES</span></div>
+      <div className="bt-membership-heading"><Reveal><h2 id="bt-membership-title">A PLAN THAT<br /><em>FITS THE WORK.</em></h2></Reveal><p>Explore illustrative membership scenarios, then ask the gym for accurate pricing and terms.</p></div>
+      <div className="bt-membership-grid">
+        <div className="bt-membership-controls">
+          <span className="bt-overline">01 / TRAINING STYLE</span>
+          <div className="bt-segment" role="group" aria-label="Membership type">
+            <button type="button" className={type === 'individual' ? 'active' : ''} aria-pressed={type === 'individual'} onClick={() => setType('individual')}>INDIVIDUAL</button>
+            <button type="button" className={type === 'couple' ? 'active' : ''} aria-pressed={type === 'couple'} onClick={() => setType('couple')}>COUPLE</button>
+          </div>
+          <span className="bt-overline">02 / DURATION</span>
+          <div className="bt-durations" role="group" aria-label="Membership months">
+            {([1, 3, 6, 12] as Months[]).map(value =>
+              <button key={value} type="button" className={months === value ? 'active' : ''} aria-pressed={months === value} onClick={() => setMonths(value)}>
+                <strong>{value}</strong><small>{value === 1 ? 'MONTH' : 'MONTHS'}</small>
+              </button>)}
+          </div>
+          <label className="bt-coach-toggle"><input type="checkbox" checked={coach} onChange={e => setCoach(e.target.checked)} />
+            <span>INCLUDE ILLUSTRATIVE TRAINER ADD-ON</span></label>
+          <p className="bt-membership-warning">All figures are demonstration examples, not approved Body Tech Gym prices or an offer to purchase. Confirm current fees directly with the club.</p>
+        </div>
+        <div className="bt-membership-result">
+          <div className="bt-membership-result-top"><span>ILLUSTRATIVE TOTAL</span><span>{type.toUpperCase()} / {months} MO</span></div>
+          <strong className="bt-membership-price">{inr(quote.total)}</strong>
+          <span className="bt-membership-per">DEMO AMOUNT ONLY / NOT A QUOTE</span>
+          <div className="bt-membership-facts"><div><span>DURATION</span><strong>{months} MONTH{months > 1 ? 'S' : ''}</strong></div>
+            <div><span>OPTION</span><strong>{coach ? 'WITH TRAINER ADD-ON' : 'STANDARD SCENARIO'}</strong></div></div>
+          <a href={waLink('Hello Body Tech Gym, I would like current membership details for ' + type + ' training for ' + months + ' month(s). Please share official pricing, what is included and availability.')} target="_blank" rel="noopener noreferrer" className="bt-button bt-button-acid">ASK FOR OFFICIAL PRICING <Arrow diagonal /></a>
+        </div>
+      </div>
+    </div>
+  </section>;
 }
-function FitnessLab({ onGoal }: { onGoal: (g: Goal) => void }) {
-  const [expanded, setExpanded] = useState(false); const [height, setHeight] = useState('170'); const [weight, setWeight] = useState('70'); const [age, setAge] = useState('27'); const [sex, setSex] = useState<SexForEquation>('male'); const [activity, setActivity] = useState<Activity>('moderate'); const [goal, setGoal] = useState<Goal>('Muscle & Strength'); const result = fitnessBlueprint({ height: Number(height), weight: Number(weight), age: Number(age), sex, activity, goal });
-  return <section className="lab-section" id="lab"><div className="wide-container"><div className="lab-heading"><div><Eyebrow>05 / A PRACTICAL START</Eyebrow><h2>KNOW YOUR<br /><em>STARTING POINT.</em></h2></div><button type="button" aria-expanded={expanded} aria-controls="lab-content" onClick={() => setExpanded(!expanded)} className="lab-expand">{expanded ? 'CLOSE THE FITNESS ESTIMATOR' : 'OPEN THE FITNESS ESTIMATOR'} <span>{expanded ? '−' : '+'}</span></button></div><AnimatePresence initial={false}>{expanded && <motion.div id="lab-content" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: .38, ease: fast }} className="lab-panel"><div className="lab-form"><p>For adults 18–85. Use approximate values to see general energy and protein estimates. This is not a medical or dietary prescription.</p><div className="lab-fields"><label>HEIGHT / CM<input type="number" min="120" max="230" value={height} onChange={e => setHeight(e.target.value)} /></label><label>WEIGHT / KG<input type="number" min="30" max="300" value={weight} onChange={e => setWeight(e.target.value)} /></label><label>AGE / YEARS<input type="number" min="18" max="85" value={age} onChange={e => setAge(e.target.value)} /></label><label>SEX USED IN EQUATION<select value={sex} onChange={e => setSex(e.target.value as SexForEquation)}><option value="male">Male equation</option><option value="female">Female equation</option></select></label><label>ACTIVITY<select value={activity} onChange={e => setActivity(e.target.value as Activity)}><option value="sedentary">Mostly seated</option><option value="light">Lightly active</option><option value="moderate">Moderately active</option><option value="active">Highly active</option></select></label><label>TRAINING GOAL<select value={goal} onChange={e => setGoal(e.target.value as Goal)}>{d.goals.map(g => <option key={g}>{g}</option>)}</select></label></div></div><div className="lab-result" aria-live="polite">{result ? <><div className="lab-stat"><strong>{result.bmi.toFixed(1)}</strong><span>BMI / {result.bmiCategory}</span></div><div className="lab-summaries"><div>MAINTENANCE ESTIMATE <strong>{result.maintenance} kcal/day</strong></div><div>ILLUSTRATIVE TARGET <strong>{result.calorieTarget === null ? 'ASK A PROFESSIONAL' : `${result.calorieTarget} kcal/day`}</strong></div><div>DAILY PROTEIN ESTIMATE <strong>{result.protein} g/day</strong></div></div><p>Use the result only as a starting point. Individual medical conditions, pregnancy, growth and medication can make generic estimates inappropriate.</p><button className="quiet-button" onClick={() => onGoal(goal)}>ENQUIRE ABOUT {result.track.toUpperCase()} <IconArrow up /></button></> : <p role="status">Please enter valid adult values: 120–230 cm, 30–300 kg, and 18–85 years.</p>}</div></motion.div>}</AnimatePresence><div className="lab-bottom">KNOWLEDGE, NOT GUESSWORK <span>YOUR JOURNEY IS INDIVIDUAL.</span></div></div></section>;
+
+function FitnessCompass() {
+  const [expanded, setExpanded] = useState(false);
+  const [height, setHeight] = useState('170'); const [weight, setWeight] = useState('70'); const [age, setAge] = useState('27');
+  const [sex, setSex] = useState<SexForEquation>('male'); const [activity, setActivity] = useState<Activity>('moderate');
+  const [goal, setGoal] = useState<Goal>('Muscle & Strength');
+  const result = fitnessBlueprint({ height: Number(height), weight: Number(weight), age: Number(age), sex, activity, goal });
+  return <section className="bt-compass" aria-label="Optional fitness planning utility">
+    <div className="bt-container"><div className="bt-compass-header"><div><span className="bt-overline">OPTIONAL / TRAINING COMPASS</span><h2>KNOW YOUR<br />STARTING POINT.</h2></div>
+      <button type="button" className="bt-underlink" aria-expanded={expanded} aria-controls="bt-compass-panel" onClick={() => setExpanded(value => !value)}>{expanded ? 'CLOSE TOOL' : 'EXPLORE TOOL'} <span aria-hidden="true">{expanded ? '−' : '+'}</span></button></div>
+      {expanded && <div id="bt-compass-panel" className="bt-compass-panel"><div className="bt-compass-fields">
+        <label>HEIGHT (CM)<input type="number" min="120" max="230" value={height} onChange={e => setHeight(e.target.value)} /></label>
+        <label>WEIGHT (KG)<input type="number" min="30" max="300" value={weight} onChange={e => setWeight(e.target.value)} /></label>
+        <label>AGE (18+)<input type="number" min="18" max="85" value={age} onChange={e => setAge(e.target.value)} /></label>
+        <label>SEX FOR EQUATION<select value={sex} onChange={e => setSex(e.target.value as SexForEquation)}><option value="male">Male</option><option value="female">Female</option></select></label>
+        <label>ACTIVITY<select value={activity} onChange={e => setActivity(e.target.value as Activity)}><option value="sedentary">Mostly seated</option><option value="light">Lightly active</option><option value="moderate">Moderately active</option><option value="active">Very active</option></select></label>
+        <label>GOAL<select value={goal} onChange={e => setGoal(e.target.value as Goal)}>{d.goals.map(item => <option key={item} value={item}>{item}</option>)}</select></label>
+      </div><div className="bt-compass-result" aria-live="polite">{result ? <>
+        <span>ESTIMATED DAILY ENERGY FOR MAINTENANCE</span><strong>{result.maintenance.toLocaleString('en-IN')} <small>KCAL</small></strong>
+        <p>Illustrative calculation only. BMI: {result.bmi.toFixed(1)} ({result.bmiCategory}). Not medical advice, a diagnosis, or an individualized diet prescription.</p></>
+        : <p>Enter values within the displayed ranges to see the estimate.</p>}</div></div>}
+    </div>
+  </section>;
 }
-function Times() { return <section className="times" id="schedule"><div className="wide-container"><div className="times-lead"><Eyebrow dark>06 / ARRANGE A VISIT</Eyebrow><h2>FIND A TIME.<br /><em>MAKE IT COUNT.</em></h2><p>Body Tech is publicly listed with a 6 AM opening time. Exact branch, class, trainer and closing hours need confirmation. This is a sample enquiry timeline, not a live schedule.</p><a href={waLink('Hello Body Tech Gym, please send me your current gym opening hours, trainer availability, and yoga/aerobics timetable.')} className="editorial-link" target="_blank" rel="noopener noreferrer">REQUEST CURRENT TIMINGS <IconArrow up /></a></div><div className="times-list"><div className="time-item time-listed"><span>06:00</span><div><strong>MORNING OPENING</strong><small>Publicly listed / confirm branch</small></div><b>LISTED</b></div><div className="time-item"><span>07:30</span><div><strong>COACHING ENQUIRY</strong><small>Illustrative request window</small></div><b>ASK TEAM</b></div><div className="time-item"><span>17:30</span><div><strong>EVENING TRAINING ENQUIRY</strong><small>Illustrative request window</small></div><b>ASK TEAM</b></div><div className="time-item"><span>19:00</span><div><strong>YOGA / AEROBICS ENQUIRY</strong><small>Class schedules not confirmed</small></div><b>ASK TEAM</b></div></div></div></section>; }
-const faqs = [
-  ['I’m completely new to training. Is this for me?', 'Yes, the enquiry is open to beginners. Ask the gym what supervised introductions, coaches and suitable equipment are currently available.'],
-  ['Is the three-day trial free?', 'This website shows a suggested introductory journey, not a confirmed free trial. The gym must confirm trial availability, eligibility and charges.'],
-  ['Can we train as a couple?', 'Couple packages have appeared in local descriptions. Request the current membership terms and schedule directly from the club.'],
-  ['Are yoga and aerobics offered every day?', 'Both appear among the gym’s listed services; exact batches and instructors require confirmation.'],
-  ['Are the photos from the real gym?', 'No. The campaign visuals are generated concept imagery, branded for this design demonstration. Replace them with approved real facility photography before official launch.']
+
+const faqs: [string, string][] = [
+  ['Can I visit before joining?', 'Send a first-visit enquiry to the team through WhatsApp. Availability, any introductory access and applicable terms must be confirmed directly.'],
+  ['What membership plans are available?', 'The interactive amounts on this concept site are examples only. Contact the gym for its current official fees and inclusions.'],
+  ['Does Body Tech have personal coaching?', 'You can enquire about personal coaching and available trainers. Specific availability has not been independently confirmed.'],
+  ['Which branch should I visit?', 'Public directories list Anupam Nagar and Srishti Colony. Confirm your preferred branch and programme with the team before travelling.'],
+  ['Are class times shown live?', 'No. This website does not connect to a live timetable or occupancy system. Ask the gym to confirm the latest opening hours and sessions.'],
 ];
-function LocationAndFaq() {
-  const [branch, setBranch] = useState<LocationId>('anupam'); const [faq, setFaq] = useState<number | null>(0); const selected = d.locations.find(l => l.id === branch)!;
-  return <section className="location" id="find-us"><div className="wide-container"><div className="loc-header"><Eyebrow>07 / LOCAL ROOTS</Eyebrow><h2>RIGHT HERE.<br /><em>RAJNANDGAON.</em></h2></div><div className="loc-grid"><div className="loc-branches"><p>Two public directory locations appear under Body Tech Gym. Contact the team to confirm which branch operates your preferred programme before travelling.</p><div className="branch-tabs" role="group" aria-label="Choose listed location">{d.locations.map((l, i) => <button key={l.id} type="button" aria-pressed={branch === l.id} className={branch === l.id ? 'active' : ''} onClick={() => setBranch(l.id)}><small>0{i + 1} / LISTED LOCATION</small><strong>{l.short}</strong><span>{l.landmark}</span></button>)}</div></div><div className="loc-selected" aria-live="polite"><div className="loc-map"><span className="map-marker">BT.</span><div className="cross-horizontal"/><div className="cross-vertical"/><span>491441 / RJN</span></div><div className="loc-address"><span>{selected.label}</span><h3>{selected.landmark}</h3><p>{selected.address}</p><small>{selected.status}</small><div className="loc-actions"><a href={directionsUrl(branch)} target="_blank" rel="noopener noreferrer" className="cta cta-mini">GOOGLE MAPS <IconArrow up /></a><a href={d.contact.tel} className="loc-call">CALL THE GYM <IconArrow up /></a></div></div></div></div><div className="faq-area"><div><Eyebrow>08 / THE DETAILS</Eyebrow><h3>GOOD QUESTIONS.<br /><em>STRAIGHT ANSWERS.</em></h3><a href={waLink('Hello Body Tech Gym, I have a question about membership and visiting.')} target="_blank" rel="noopener noreferrer" className="editorial-link">ASK YOUR OWN QUESTION <IconArrow up /></a></div><div className="faq-items">{faqs.map(([q, a], i) => <div key={q} className="faq-row"><button type="button" onClick={() => setFaq(faq === i ? null : i)} aria-expanded={faq === i} aria-controls={`faq-${i}`}><span>{String(i + 1).padStart(2, '0')}</span><strong>{q}</strong><i aria-hidden="true">{faq === i ? '−' : '+'}</i></button>{faq === i && <div id={`faq-${i}`} className="faq-answer"><p>{a}</p></div>}</div>)}</div></div><div className="proof-note"><span>PUBLIC DIRECTORY SNAPSHOT</span><strong>{d.reviewEvidence.score}/5 <small>· {d.reviewEvidence.count} listed ratings</small></strong><p>{d.reviewEvidence.directoryName}, {d.reviewEvidence.collectedLabel}. The figure is historical and may change. <a target="_blank" rel="noopener noreferrer" href={d.sourceUrls.directory}>SEE SOURCE ↗</a></p></div></div></section>;
+
+function Locations() {
+  const [active, setActive] = useState<LocationId>('anupam'); const [faq, setFaq] = useState<number | null>(0);
+  const location = d.locations.find(item => item.id === active) ?? d.locations[0];
+  return <section className="bt-locations bt-section" id="locations" aria-labelledby="bt-locations-title"><div className="bt-container">
+    <div className="bt-section-label"><span>06 / FIND US</span><span>IN RAJNANDGAON</span></div>
+    <div className="bt-location-heading"><Reveal><h2 id="bt-locations-title">REAL ROOTS.<br /><em>RIGHT HERE.</em></h2></Reveal><p>Two locations appear in public listings. Check with the team which branch is operating your preferred programme.</p></div>
+    <div className="bt-location-grid">
+      <div className="bt-location-selector" role="group" aria-label="Select publicly listed gym location">{d.locations.map((item, index) =>
+        <button type="button" key={item.id} className={active === item.id ? 'active' : ''} aria-pressed={active === item.id} onClick={() => setActive(item.id)}>
+          <span>0{index + 1} / LISTED LOCATION</span><strong>{item.short}</strong><small>{item.landmark}</small><Arrow diagonal /></button>)}</div>
+      <div className="bt-location-details"><span className="bt-overline">CURRENTLY VIEWING / {location.short.toUpperCase()}</span>
+        <h3>{location.landmark}</h3><p>{location.address}</p><small>{location.status}</small>
+        <div className="bt-location-actions"><a className="bt-button bt-button-dark" href={directionsUrl(active)} target="_blank" rel="noopener noreferrer">OPEN GOOGLE MAPS <Arrow diagonal /></a>
+          <a className="bt-underlink" href={d.contact.tel}>CALL THE GYM <Arrow /></a></div>
+      </div>
+    </div>
+    <div className="bt-faq"><div><span className="bt-overline">THE DETAILS / FAQ</span><h3>GOOD QUESTIONS.<br /><em>STRAIGHT ANSWERS.</em></h3>
+      <a className="bt-underlink" href={waLink('Hello Body Tech Gym, I have a question about training and membership.')} target="_blank" rel="noopener noreferrer">ASK THE TEAM <Arrow diagonal /></a></div>
+      <div className="bt-faq-list">{faqs.map(([question, answer], index) =>
+        <div key={question} className="bt-faq-item"><button type="button" aria-expanded={faq === index} aria-controls={'bt-faq-' + index}
+          onClick={() => setFaq(faq === index ? null : index)}><span>0{index + 1}</span><strong>{question}</strong><i aria-hidden="true">{faq === index ? '−' : '+'}</i></button>
+          {faq === index && <div id={'bt-faq-' + index}><p>{answer}</p></div>}</div>)}</div>
+    </div>
+  </div></section>;
 }
-function Closing() { return <footer className="closing"><div className="wide-container"><Eyebrow>THIS IS YOUR STARTING LINE.</Eyebrow><h2>START<br /><span>SOMEWHERE.</span></h2><div className="closing-action"><p>Your next session starts with a simple question.<br />Ask the Body Tech team how to begin.</p><a className="cta cta-light" href="#visit">REQUEST A FIRST VISIT <IconArrow up /></a></div><div className="closing-bottom"><Wordmark /><span>© {new Date().getFullYear()} BODY TECH GYM / CONCEPT WEBSITE</span><a href={d.contact.tel}>{d.contact.display}</a><a href="#top">BACK TO TOP ↑</a></div><p className="closing-disclaimer">Independent pitch concept created by Divex Labs. Generated visual assets are not photographs of the actual premises, coaches or members. All offers, fees, hours and branch details are subject to owner confirmation. No visitor data is stored or transmitted to a website server.</p></div></footer>; }
-function MobileContact() { return <aside className="mobile-contact" aria-label="Quick actions"><a href={d.contact.tel}>CALL</a><a href={waLink('Hello Body Tech Gym, I want to enquire about joining.')} target="_blank" rel="noopener noreferrer">WHATSAPP</a><a href="#visit">FIRST VISIT <IconArrow up /></a></aside>; }
+
+function Footer() {
+  return <footer className="bt-footer"><div className="bt-container"><span className="bt-overline">MAKE A START / BODY TECH GYM</span>
+    <div className="bt-footer-main"><h2>YOUR NEXT<br /><em>CHAPTER.</em></h2><div><p>The next session starts with a conversation. Find out what training at Body Tech could look like for you.</p>
+      <a className="bt-button bt-button-acid" href="#visit">REQUEST YOUR FIRST VISIT <Arrow diagonal /></a></div></div>
+    <div className="bt-footer-bottom"><Wordmark /><span>© {new Date().getFullYear()} BODY TECH GYM / CONCEPT EXPERIENCE</span><a href={d.contact.tel}>{d.contact.display}</a><a href="#top">BACK TO TOP ↑</a></div>
+    <p className="bt-legal">Independent concept presentation by Divex Labs. Generated campaign imagery does not depict the gym's actual premises, trainers or members. Membership figures are illustrative; offers, programmes, times and branch operations require owner confirmation. No visitor form data is stored on this website.</p>
+  </div></footer>;
+}
+
+function MobileAction() {
+  return <div className="bt-mobile-action" aria-label="Quick contact actions"><a href={d.contact.tel}>CALL</a>
+    <a href={waLink('Hello Body Tech Gym, I would like to enquire about joining.')} target="_blank" rel="noopener noreferrer">WHATSAPP</a>
+    <a href="#visit">FIRST VISIT <Arrow diagonal /></a></div>;
+}
+
 export default function App() {
-  const [choice, setChoice] = useState<{ goal: Goal; revision: number }>({ goal: 'Beginner Kickstart', revision: 0 });
-  const onGoal = (goal: Goal) => { setChoice(prev => ({ goal, revision: prev.revision + 1 })); document.getElementById('visit')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' }); };
-  return <><a className="skip-link" href="#main">Skip to main content</a><ScrollLine /><Header /><main id="main"><Hero /><CredibilityBand /><Manifesto /><Programs onGoal={onGoal} /><CinematicSequence /><Immersion /><Trial prefilled={choice.goal} revision={choice.revision} /><Membership /><FitnessLab onGoal={onGoal} /><Times /><LocationAndFaq /></main><Closing /><MobileContact /></>;
+  const [selected, setSelected] = useState<{ goal: Goal; revision: number }>({ goal: 'Beginner Kickstart', revision: 0 });
+  const goToGoal = (goal: Goal) => {
+    setSelected(previous => ({ goal, revision: previous.revision + 1 }));
+    document.getElementById('visit')?.scrollIntoView({
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+      block: 'start',
+    });
+  };
+  const { scrollYProgress } = useScroll();
+  const progress = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  return <><a href="#main" className="bt-skip">Skip to main content</a><motion.div className="bt-scroll-indicator" aria-hidden="true" style={{ scaleX: progress }} />
+    <Header /><main id="main"><Hero /><Signal /><Club /><Training onGoal={goToGoal} /><Story />
+      <FirstVisit chosenGoal={selected.goal} revision={selected.revision} /><Membership /><FitnessCompass /><Locations /></main>
+    <Footer /><MobileAction /></>;
 }

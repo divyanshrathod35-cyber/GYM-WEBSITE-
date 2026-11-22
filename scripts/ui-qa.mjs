@@ -119,5 +119,12 @@ try {
   fs.writeFileSync(path.join(output, 'qa-report.json'), JSON.stringify(report, null, 2));
   try { socket?.close(); } catch { /* ignore */ }
   try { browser?.kill('SIGTERM'); } catch { /* ignore */ }
-  fs.rmSync(profile, { recursive: true, force: true });
+  // Chrome can continue writing profile files briefly after SIGTERM.
+  // Retry bounded cleanup; never turn successful UI assertions into a false CI failure.
+  await pause(450);
+  try {
+    fs.rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 250 });
+  } catch (error) {
+    console.warn('Non-fatal Chrome temporary-profile cleanup issue:', error?.code || String(error));
+  }
 }

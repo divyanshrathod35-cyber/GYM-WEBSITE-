@@ -343,7 +343,7 @@ button:focus-visible,input:focus-visible,select:focus-visible {outline-offset:3p
   .bt-brand-name strong {font-size:23px}
   .bt-brand-name small {display:none}
   .bt-kicker {flex-wrap:wrap;font-size:12px;gap:9px;padding:17px 0 11px}
-  .bt-kicker>span:last-child {flex-basis:100%;margin-left:41px;text-align:left}
+  .bt-kicker>span:last-child {flex-basis:auto;margin-left:auto;text-align:right;white-space:nowrap}
   .bt-hero-main {padding:29px 0 28px}
   .bt-hero h1 {font-size:clamp(74px,14.2vw,112px);line-height:.85;margin-bottom:18px;letter-spacing:-.017em}
   .bt-hero-description {font-size:16px;line-height:1.55;max-width:33rem;margin-bottom:22px}
@@ -354,6 +354,8 @@ button:focus-visible,input:focus-visible,select:focus-visible {outline-offset:3p
   .bt-hero-photo {order:-1;min-height:0;height:clamp(295px,43svh,410px);flex-shrink:0}
   .bt-hero-photo img {inset:-3% 0 0;height:106%;object-position:68% 46%}
   .bt-hero-photo-top,.bt-hero-photo-bottom {left:20px;right:20px;font-size:12px;gap:12px}
+  .bt-hero-photo-bottom span:first-child {display:none}
+  .bt-hero-photo-bottom {justify-content:flex-end}
   .bt-signal {justify-content:space-between;flex-wrap:nowrap;gap:8px;font-size:clamp(14px,3.8vw,19px);padding:18px 14px;white-space:nowrap}
   .bt-signal i {width:4px;height:4px;flex-basis:4px}
   .bt-section-label {font-size:12px;line-height:1.5;letter-spacing:.08em}
@@ -388,7 +390,7 @@ button:focus-visible,input:focus-visible,select:focus-visible {outline-offset:3p
   .bt-footer h2 {font-size:clamp(88px,16vw,128px)}
   .bt-footer-bottom .bt-brand {flex-basis:100%}
   .bt-mobile-action {position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr 1.24fr;gap:4px;background:var(--paper);padding:8px 8px max(8px,env(safe-area-inset-bottom));box-shadow:0 -4px 22px #0003;z-index:100}
-  .bt-mobile-action a {min-height:49px;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--rule);font-size:clamp(10px,2.65vw,12px);font-weight:700;letter-spacing:.012em}
+  .bt-mobile-action a {min-height:52px;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--rule);font-size:12px;font-weight:700;letter-spacing:0}
   .bt-mobile-action a:last-child {background:var(--ink);border-color:var(--ink);color:#fff}
   .bt-mobile-action svg {width:16px}
   body {padding-bottom:65px}
@@ -396,7 +398,7 @@ button:focus-visible,input:focus-visible,select:focus-visible {outline-offset:3p
 @media(max-width:390px) {
   .bt-brand-name small {max-width:175px;white-space:normal}
   .bt-hero h1 {font-size:clamp(70px,13.6vw,82px)}
-  .bt-kicker>span:last-child {margin-left:0}
+  .bt-kicker>span:last-child {flex-basis:100%;margin-left:0;text-align:left;white-space:normal}
   .bt-hero-photo {height:clamp(280px,44svh,390px);min-height:0}
   .bt-hero-bottom span:last-child {display:none}
   .bt-club h2,.bt-training h2,.bt-story h2,.bt-visit h2,.bt-membership h2,.bt-location-heading h2 {font-size:clamp(57px,12.9vw,76px)}

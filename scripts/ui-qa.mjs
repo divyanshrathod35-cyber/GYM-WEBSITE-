@@ -78,6 +78,9 @@ try {
     const screenshot = await request('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
     fs.writeFileSync(path.join(output, 'bodytech-' + width + '.png'), Buffer.from(screenshot.result.data, 'base64'));
     if (width === 390 || width === 1440) {
+      // Warm all lazy images and trigger once-only editorial reveals with a real scroll pass.
+      const warmed = await inspect("(async () => { const max=document.documentElement.scrollHeight; for(let y=0;y<max;y+=600){ window.scrollTo({top:y,behavior:'instant'}); await new Promise(r=>setTimeout(r,100)); } await new Promise(r=>setTimeout(r,350)); window.scrollTo({top:0,behavior:'instant'}); await new Promise(r=>setTimeout(r,900)); return Array.from(document.images).filter(img=>!img.complete||img.naturalWidth===0).map(img=>img.getAttribute('src')); })()");
+      assert.deepEqual(warmed, [], 'Images still missing after real scroll: ' + warmed);
       const metrics = await request('Page.getLayoutMetrics');
       const contentHeight = Math.min(Math.ceil(metrics.result.cssContentSize?.height || metrics.result.contentSize?.height || 900), 15000);
       const full = await request('Page.captureScreenshot', {

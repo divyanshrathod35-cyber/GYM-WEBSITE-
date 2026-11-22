@@ -57,14 +57,20 @@ try {
   const jsx = ts.transpileModule(ui, { fileName: 'src/App.tsx', reportDiagnostics: true, compilerOptions: { jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2022 } });
   assert.equal(jsx.diagnostics?.length ?? 0, 0, 'App.tsx must parse');
   assert(ui.includes('prefers-reduced-motion') && ui.includes('aria-expanded') && ui.includes('aria-invalid'), 'Expected accessible interaction states');
-  // Regression check: no more superimposed, absolutely-positioned animation headlines.
-  const cinema = fs.readFileSync(path.join(projectRoot, 'src/components/CinematicSequence.tsx'), 'utf8');
-  const flagship = fs.readFileSync(path.join(projectRoot, 'src/flagship.css'), 'utf8');
-  assert(cinema.includes('bt-story-chapter') && cinema.includes('bt-story-copy'), 'Editorial chapters must remain in normal document flow');
-  assert(!cinema.includes('bt-cinema-headline') && !cinema.includes('bt-cinema-giant'), 'Legacy overlapping cinematic layers cannot return');
-  assert(flagship.includes('.bt-story-chapter {') && flagship.includes('grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr)'), 'Responsive two-column narrative grid is required');
-  assert(!flagship.includes('.bt-cinema-headline {'), 'Legacy absolute headline styling must be removed');
-  console.log('PASS: input validation, pricing maths, calorie safeguards, share links, SVG escaping, media assets and JSX syntax, narrative layout regression');
+  // V6 regression gates: one active stylesheet; no superimposed animated copy.
+  const main = fs.readFileSync(path.join(projectRoot, 'src/main.tsx'), 'utf8');
+  const style = fs.readFileSync(path.join(projectRoot, 'src/editorial-v6.css'), 'utf8');
+  const head = fs.readFileSync(path.join(projectRoot, 'index.html'), 'utf8');
+  assert(main.includes("'./editorial-v6.css'"), 'V6 design stylesheet must be active');
+  assert(!main.includes("'./index.css'") && !main.includes("'./flagship.css'"), 'Legacy conflicting styles must not load');
+  assert(ui.includes('bt-hero-copy') && ui.includes('bt-hero-photo'), 'Hero copy and photography must be in separate containers');
+  assert(ui.includes('bt-programme-tabs') && ui.includes('aria-selected'), 'Accessible programme explorer is required');
+  assert(!ui.includes('bt-cinema-headline') && !ui.includes('bt-cinema-giant'), 'Overlapping animation cannot return');
+  assert(style.includes('.bt-hero {display:grid') && style.includes('.bt-hero-photo {'), 'Responsive asymmetric hero grid is required');
+  assert(style.includes('@media(max-width:600px)') && style.includes('@media(prefers-reduced-motion:reduce)'), 'Mobile and motion safety queries are required');
+  assert(head.includes('rel="canonical"') && head.includes('HealthClub'), 'SEO metadata and structured data are required');
+  assert(head.includes('noindex,follow'), 'Concept may not be indexed before owner approval');
+  console.log('PASS: input validation, pricing maths, calorie safeguards, share links, SVG escaping, media assets and JSX syntax, V6 layout and SEO regression gates');
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });
 }

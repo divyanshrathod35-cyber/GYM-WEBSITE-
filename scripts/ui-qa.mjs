@@ -60,13 +60,13 @@ try {
   await request('Page.enable');
   await request('Runtime.enable');
 
-  for (const width of [320, 360, 390, 768, 1024, 1440, 1920]) {
+  for (const width of [320, 360, 390, 430, 600, 768, 1024, 1440, 1920]) {
     await request('Emulation.setDeviceMetricsOverride', { width, height: width < 800 ? 800 : 900, screenWidth: width, screenHeight: width < 800 ? 800 : 900, deviceScaleFactor: 1, mobile: width < 800 });
     await request('Page.navigate', { url });
     await until(() => inspect('Boolean(document.querySelector(".bt-hero h1") && document.querySelector(".bt-programme-stage"))'));
     await inspect('document.fonts.ready');
     await pause(350);
-    const measure = "(() => { const h=document.querySelector('.bt-hero h1'); const p=document.querySelector('.bt-hero-photo'); const a=h.getBoundingClientRect(); const b=p.getBoundingClientRect(); const overlaps=a.left<b.right-2&&a.right>b.left+2&&a.top<b.bottom-2&&a.bottom>b.top+2; const clipped=Array.from(h.querySelectorAll('span')).some(x=>{const r=x.getBoundingClientRect();return r.left < -2||r.right>innerWidth+2||r.width>a.width+4;}); const links=Array.from(document.querySelectorAll('a[href^=\"#\"]')).map(x=>x.getAttribute('href')).filter(x=>x!=='#'&&!document.getElementById(x.substring(1))); return {width:innerWidth,overflow:document.documentElement.scrollWidth-innerWidth,h1:document.querySelectorAll('h1').length,overlaps,clipped,links,heroImage:!!document.querySelector('.bt-hero-photo img')?.naturalWidth};})()";
+    const measure = "(() => { const h=document.querySelector('.bt-hero h1'); const p=document.querySelector('.bt-hero-photo'); const a=h.getBoundingClientRect(); const b=p.getBoundingClientRect(); const overlaps=a.left<b.right-2&&a.right>b.left+2&&a.top<b.bottom-2&&a.bottom>b.top+2; const clipped=Array.from(h.querySelectorAll('span')).some(x=>{const r=x.getBoundingClientRect();return r.left < -2||r.right>innerWidth+2||r.width>a.width+4;}); const links=Array.from(document.querySelectorAll('a[href^=\"#\"]')).map(x=>x.getAttribute('href')).filter(x=>x!=='#'&&!document.getElementById(x.substring(1))); return {width:innerWidth,overflow:document.documentElement.scrollWidth-innerWidth,h1:document.querySelectorAll('h1').length,overlaps,clipped,links,heroImage:!!document.querySelector('.bt-hero-photo img')?.naturalWidth,photoTop:b.top,photoBottom:b.bottom,photoHeight:b.height,headlineTop:a.top,stickyTap:document.querySelector('.bt-mobile-action a:last-child')?.getBoundingClientRect().height||0};})()";
     const result = await inspect(measure);
     assert.equal(result.width, width, 'Chrome rendered a different CSS viewport width; previous QA was a false pass');
     assert(result.overflow <= 2, 'Horizontal overflow at ' + width + ': ' + result.overflow);
@@ -75,6 +75,12 @@ try {
     assert.equal(result.clipped, false, 'Hero headline clips at ' + width);
     assert.deepEqual(result.links, [], 'Broken anchor links at ' + width);
     assert(result.heroImage, 'Hero imagery failed to load at ' + width);
+    if (width <= 600) {
+      assert(result.photoTop >= 0 && result.photoTop < 120, 'Mobile hero photo must be the first visual anchor at ' + width);
+      assert(result.photoHeight >= 270, 'Mobile hero visual is too small at ' + width);
+      assert(result.headlineTop >= result.photoBottom - 2, 'Mobile hero title collides with photo at ' + width);
+      assert(result.stickyTap >= 44, 'Mobile visit action must meet 44px tap target at ' + width);
+    }
     const screenshot = await request('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
     fs.writeFileSync(path.join(output, 'bodytech-' + width + '.png'), Buffer.from(screenshot.result.data, 'base64'));
     if (width === 390 || width === 1440) {
@@ -113,5 +119,12 @@ try {
   fs.writeFileSync(path.join(output, 'qa-report.json'), JSON.stringify(report, null, 2));
   try { socket?.close(); } catch { /* ignore */ }
   try { browser?.kill('SIGTERM'); } catch { /* ignore */ }
-  fs.rmSync(profile, { recursive: true, force: true });
+  // Chrome can continue writing profile files briefly after SIGTERM.
+  // Retry bounded cleanup; never turn successful UI assertions into a false CI failure.
+  await pause(450);
+  try {
+    fs.rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 250 });
+  } catch (error) {
+    console.warn('Non-fatal Chrome temporary-profile cleanup issue:', error?.code || String(error));
+  }
 }

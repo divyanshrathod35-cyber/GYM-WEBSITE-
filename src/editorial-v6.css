@@ -299,7 +299,7 @@ button:focus-visible,input:focus-visible,select:focus-visible {outline-offset:3p
 }
 @media(max-width:800px) {
   .bt-header {height:74px}
-  .bt-hero {grid-template-columns:1fr;min-height:0}
+  .bt-hero {display:flex;flex-direction:column;min-height:0}
   .bt-hero-copy {padding-inline:var(--page-pad)}
   .bt-hero-main {padding:75px 0 65px}
   .bt-hero h1 {font-size:clamp(86px,12vw,145px)}
@@ -343,32 +343,35 @@ button:focus-visible,input:focus-visible,select:focus-visible {outline-offset:3p
   .bt-brand-name strong {font-size:23px}
   .bt-brand-name small {display:none}
   .bt-kicker {flex-wrap:wrap;font-size:12px;gap:9px;padding:17px 0 11px}
-  .bt-kicker>span:last-child {flex-basis:100%;margin-left:41px;text-align:left}
-  .bt-hero-main {padding:36px 0 24px}
-  .bt-hero h1 {font-size:clamp(74px,14.2vw,112px)}
-  .bt-hero-description {font-size:16px;margin-bottom:22px}
+  .bt-kicker>span:last-child {flex-basis:auto;margin-left:auto;text-align:right;white-space:nowrap}
+  .bt-hero-main {padding:29px 0 28px}
+  .bt-hero h1 {font-size:clamp(74px,14.2vw,112px);line-height:.85;margin-bottom:18px;letter-spacing:-.017em}
+  .bt-hero-description {font-size:16px;line-height:1.55;max-width:33rem;margin-bottom:22px}
   .bt-hero-actions {align-items:stretch;flex-direction:column;gap:10px}
   .bt-hero-actions .bt-button {width:100%;min-height:52px}
   .bt-text-link {align-self:flex-start;min-height:40px}
-  .bt-hero-bottom {font-size:12px;padding-block:12px}
-  .bt-hero-photo {min-height:480px}
+  .bt-hero-bottom {display:none}
+  .bt-hero-photo {order:-1;min-height:0;height:clamp(295px,43svh,410px);flex-shrink:0}
+  .bt-hero-photo img {inset:-3% 0 0;height:106%;object-position:68% 46%}
   .bt-hero-photo-top,.bt-hero-photo-bottom {left:20px;right:20px;font-size:12px;gap:12px}
-  .bt-signal {justify-content:center;flex-wrap:wrap;gap:12px 20px;font-size:23px;padding:26px 16px}
+  .bt-hero-photo-bottom span:first-child {display:none}
+  .bt-hero-photo-bottom {justify-content:flex-end}
+  .bt-signal {justify-content:space-between;flex-wrap:nowrap;gap:8px;font-size:clamp(14px,3.8vw,19px);padding:18px 14px;white-space:nowrap}
   .bt-signal i {width:4px;height:4px;flex-basis:4px}
   .bt-section-label {font-size:12px;line-height:1.5;letter-spacing:.08em}
   .bt-section-label span:last-child {text-align:right}
-  .bt-club,.bt-training,.bt-story,.bt-visit,.bt-membership,.bt-locations {padding-block:86px}
-  .bt-club-intro,.bt-training-heading,.bt-visit-heading,.bt-membership-heading,.bt-location-heading {margin-block:45px 55px}
+  .bt-club,.bt-training,.bt-story,.bt-visit,.bt-membership,.bt-locations {padding-block:clamp(70px,16vw,90px)}
+  .bt-club-intro,.bt-training-heading,.bt-visit-heading,.bt-membership-heading,.bt-location-heading {margin-block:42px 44px}
   .bt-club h2,.bt-training h2,.bt-story h2,.bt-visit h2,.bt-membership h2,.bt-location-heading h2 {font-size:clamp(66px,13vw,89px)}
   .bt-story h2 {margin-block:48px}
-  .bt-club-gallery-primary img {height:460px}
+  .bt-club-gallery-primary img {height:clamp(310px,95vw,460px)}
   .bt-club-gallery-editorial>p {font-size:20px}
   .bt-programme-tabs {grid-template-columns:1fr}
   .bt-programme-tab {min-height:69px;grid-template-columns:35px 1fr 21px}
   .bt-programme-scene {display:flex;flex-direction:column}
-  .bt-programme-photo {height:390px;min-height:390px}
-  .bt-programme-detail {min-height:350px}
-  .bt-story-main-photo {height:520px;min-height:0}
+  .bt-programme-photo {height:clamp(290px,90vw,375px);min-height:0}
+  .bt-programme-detail {min-height:0}
+  .bt-story-main-photo {height:clamp(385px,120vw,520px);min-height:0}
   .bt-story-side {padding-top:0}
   .bt-story-side>p {margin:25px 0 30px}
   .bt-story-side figure {margin:45px 0 0}
@@ -387,7 +390,7 @@ button:focus-visible,input:focus-visible,select:focus-visible {outline-offset:3p
   .bt-footer h2 {font-size:clamp(88px,16vw,128px)}
   .bt-footer-bottom .bt-brand {flex-basis:100%}
   .bt-mobile-action {position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr 1.24fr;gap:4px;background:var(--paper);padding:8px 8px max(8px,env(safe-area-inset-bottom));box-shadow:0 -4px 22px #0003;z-index:100}
-  .bt-mobile-action a {min-height:46px;display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--rule);font-size:11px;font-weight:700}
+  .bt-mobile-action a {min-height:52px;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--rule);font-size:12px;font-weight:700;letter-spacing:0}
   .bt-mobile-action a:last-child {background:var(--ink);border-color:var(--ink);color:#fff}
   .bt-mobile-action svg {width:16px}
   body {padding-bottom:65px}
@@ -395,8 +398,8 @@ button:focus-visible,input:focus-visible,select:focus-visible {outline-offset:3p
 @media(max-width:390px) {
   .bt-brand-name small {max-width:175px;white-space:normal}
   .bt-hero h1 {font-size:clamp(70px,13.6vw,82px)}
-  .bt-kicker>span:last-child {margin-left:0}
-  .bt-hero-photo {min-height:400px}
+  .bt-kicker>span:last-child {flex-basis:100%;margin-left:0;text-align:left;white-space:normal}
+  .bt-hero-photo {height:clamp(280px,44svh,390px);min-height:0}
   .bt-hero-bottom span:last-child {display:none}
   .bt-club h2,.bt-training h2,.bt-story h2,.bt-visit h2,.bt-membership h2,.bt-location-heading h2 {font-size:clamp(57px,12.9vw,76px)}
   .bt-programme-photo {height:320px;min-height:320px}

@@ -1,0 +1,309 @@
+/* BODYTECH — FLAGSHIP EDITORIAL REDESIGN v3 / November 2026
+ * Full visual re-art-direction, preserving the owner's verified content logic.
+ * Signature: native-scroll kinetic photography in CinematicSequence.tsx.
+ * Art direction: chalk, carbon, oxidised red, oversized sports editorial type.
+ */
+:root {
+  --carbon: #101411;
+  --coal: #232724;
+  --coal2: #30332E;
+  --bone: #F6F2E9;
+  --paper: #EEE9DE;
+  --oxide: #B83D2B;
+  --oxide-dark: #A33020;
+  --muted: #C5C9C1;
+  --ash: #AEB4AA;
+  --rule: rgba(246,242,233,.23);
+  --black-rule: rgba(16,20,17,.25);
+  --display: 'Barlow Condensed', 'Arial Narrow', Impact, sans-serif;
+  --text: 'Plus Jakarta Sans', Arial, sans-serif;
+  --pad: clamp(24px,5.6vw,108px);
+  --ease: cubic-bezier(.22,1,.36,1);
+}
+body { background: var(--carbon); }
+::selection {background: var(--oxide);color:#fff}
+html {scroll-behavior:smooth; scroll-padding-top: 86px}
+section[id] {scroll-margin-top:86px}
+:focus-visible {outline:3px solid #E16A56;outline-offset:4px}
+:where(.wide-container,.hero-content,.manifesto-inner,.header-inner){max-width:1720px}
+.label,.meta,.eyebrow {font-size:12px; letter-spacing:.17em}
+.label i {width:32px}
+/* The header becomes a strong editorial masthead, not a generic navbar. */
+.demo-ribbon {background:#212520; min-height:40px; font-size:10px;letter-spacing:.12em; padding-block:8px}
+.demo-ribbon button {min-height:28px; color:#fff;}
+.header {height:88px; background:var(--carbon); border-color:rgba(255,255,255,.14);}
+.header-inner {gap:32px}
+.wordmark-symbol {border:0; background:var(--bone);color:var(--carbon); width:50px;height:50px; transform:none;letter-spacing:-.1em;font-size:23px}
+.wordmark-symbol:after {bottom:0;left:0;width:100%;height:4px;background:var(--oxide)}
+.wordmark-text strong {font-size:33px;letter-spacing:-.012em}
+.wordmark-text small {font-size:9px;color:#AFB4AB;letter-spacing:.18em}
+.nav-desktop a {font-size:12px;font-weight:800;letter-spacing:.012em;min-height:44px;display:inline-flex;align-items:center}
+.nav-desktop a:hover {color:#fff;text-decoration:underline;text-underline-offset:8px}
+.header-action {min-height:50px;font-size:11px;padding:0 23px;background:var(--bone);border:1px solid var(--bone)}
+.header-action:hover {background:transparent;color:var(--bone)}
+/* Monumental editorial hero with the athlete held in an asymmetrical picture plane. */
+.hero {background:var(--carbon); isolation:isolate}
+.hero-content {position:relative}
+.hero-identity {font-size:11px;letter-spacing:.19em; padding:23px 0 18px;border-bottom:1px solid rgba(255,255,255,.15)}
+.hero-identity .dash {width:48px;height:1px;background:#E16A56}
+.hero-grid {display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:minmax(680px, min(780px,calc(100svh - 128px)));min-height:0;isolation:isolate}
+.hero-left {grid-column:1/9;grid-row:1;z-index:4;padding:clamp(70px,7vw,118px) 0 clamp(42px,5vw,80px);pointer-events:none}
+.hero-left a,.hero-left button {pointer-events:auto}
+.hero-art {grid-column:7/-1;grid-row:1;min-height:0;z-index:1;margin-right:calc(-1 * var(--pad));background:#25251E}
+.hero-image-shell {inset:0}
+.hero-image-move img {filter:saturate(.78) contrast(1.10) brightness(.64);object-position:65% 45%}
+.hero-photo-vignette {background:linear-gradient(90deg,#101411 0%,rgba(16,20,17,.66) 32%,transparent 73%),linear-gradient(0deg,rgba(16,20,17,.76),transparent 37%)}
+.hero-overtitle {font-size:12px;font-weight:800;color:#E4DFD2;letter-spacing:.22em;margin:0}
+.hero h1 {font-size:clamp(98px,12.1vw,208px);font-weight:900;letter-spacing:-.036em;line-height:.74;margin:clamp(60px,7.5vw,115px) 0 clamp(40px,4vw,70px);max-width:none}
+.hero h1 .line {padding-bottom:.11em;overflow:visible;}
+.hero h1 .line>span {text-wrap:nowrap}
+.hero h1 .line-outline>span {-webkit-text-stroke:2px #F6F2E9}
+.hero-bottom {max-width:830px;gap:40px}
+.hero-prose {font-size:clamp(16px,1.1vw,19px);line-height:1.62;color:#E6E4D9;max-width:400px;letter-spacing:-.01em}
+.hero-side-note {color:#EFECE3;font-size:15px;font-weight:700;background:rgba(16,20,17,.34);padding:15px}
+.cta {font-size:12px;letter-spacing:.065em;min-height:64px;background:var(--oxide);border-color:var(--oxide);box-shadow:none}
+.cta:hover {background:#9A2F1F;border-color:#9A2F1F}
+.cta-symbol {width:64px;min-height:64px}
+.hero-vertical {top:25px;right:27px;font-size:11px}
+.hero-photo-bottom {font-size:11px}
+.hero-corner-mark {font-size:164px;opacity:.16}
+.hero-footer {font-size:11px;letter-spacing:.13em;padding-block:27px}
+/* A flat production index separates film chapters. */
+.credible-band {background:var(--bone);color:var(--carbon)}
+.credible-track {padding-block:32px;gap:30px;font-size:clamp(21px,2.3vw,35px);letter-spacing:.015em;white-space:nowrap}
+.divider-diamond {background:var(--oxide);width:8px;height:8px}
+/* Signature scroll narrative. Motion only on compositor properties. */
+.bt-cinema {height:315svh;background:#121513;position:relative;color:var(--bone)}
+.bt-cinema-stage {height:100svh;min-height:650px;position:sticky;top:0;overflow:hidden;isolation:isolate;display:flex;flex-direction:column;padding:clamp(22px,3.4vw,54px) var(--pad)}
+.bt-cinema-visual {position:absolute;inset:0;z-index:-2;overflow:hidden;background:#252824}
+.bt-cinema-frame {position:absolute;inset:0;will-change:opacity,transform;transform-origin:center}
+.bt-cinema-frame img {width:100%;height:100%;object-fit:cover;object-position:64% center;display:block;filter:saturate(.78) contrast(1.08) brightness(.69)}
+.bt-cinema-frame-2,.bt-cinema-frame-3 {opacity:0}
+.bt-cinema-shade {position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,10,8,.85),rgba(7,10,8,.24) 72%),linear-gradient(0deg,rgba(7,10,8,.63),transparent 35%)}
+.bt-cinema-north {display:flex;justify-content:space-between;gap:25px;position:relative;z-index:3;font-size:11px;letter-spacing:.19em;font-weight:800;color:#EAE7DB}
+.bt-cinema-giant {font:900 clamp(280px,51vw,900px)/.72 var(--display);letter-spacing:-.09em;position:absolute;right:-5%;bottom:12%;color:rgba(255,255,255,.11);z-index:-1;pointer-events:none;white-space:nowrap}
+.bt-cinema-copy {flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+.bt-cinema-kicker {font-size:11px;letter-spacing:.22em;font-weight:800;margin-bottom:28px;color:#E8DBCF}
+.bt-cinema-headlines {position:relative;min-height:clamp(255px,39vw,500px);max-width:1050px}
+.bt-cinema-headline {position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+.bt-cinema-headline-2,.bt-cinema-headline-3 {opacity:0}
+.bt-cinema-label {font:800 11px var(--text);letter-spacing:.2em;margin-bottom:15px;color:#FFF}
+.bt-cinema-headline h2 {font:900 clamp(84px,13vw,220px)/.79 var(--display);letter-spacing:-.04em;margin:0 0 clamp(25px,3vw,45px);white-space:nowrap}
+.bt-cinema-headline p {font-size:clamp(15px,1.3vw,19px);line-height:1.6;max-width:420px;color:#F4EDE5}
+.bt-cinema-bottom {display:flex;align-items:center;justify-content:space-between;gap:25px;position:relative;z-index:3;font-size:11px;letter-spacing:.1em;font-weight:800}
+.bt-cinema-bottom>a {display:inline-flex;gap:18px;align-items:center;min-height:48px;border-bottom:1px solid currentColor}
+.bt-cinema-progress {height:2px;flex:1;max-width:170px;background:rgba(255,255,255,.3)}
+.bt-cinema-progress>i {display:block;height:100%;width:100%;background:var(--bone);transform-origin:left center;transform:scaleX(0)}
+/* The manifesto is a deliberate quiet moment after the kinetic sequence. */
+.manifesto {background:var(--bone);padding:clamp(95px,12vw,210px) 0}
+.manifesto-top {font-size:11px;letter-spacing:.15em}
+.manifesto h2 {font-size:clamp(90px,10vw,174px);line-height:.84;letter-spacing:-.028em;margin-block:clamp(65px,8vw,145px)}
+.manifesto h2 em {color:var(--oxide-dark)}
+.manifesto .underlined {border-bottom-color:var(--oxide-dark)}
+.manifesto-bottom {grid-template-columns:7fr 5fr;gap:clamp(45px,8vw,145px)}
+.manifesto-photo {height:clamp(400px,50vw,720px)}
+.manifesto-photo img {filter:grayscale(.38) contrast(1.08);}
+.manifesto-index {color:var(--oxide-dark);font-size:80px}
+.manifesto-body p {font-size:clamp(17px,1.45vw,22px);line-height:1.65}
+/* Program switcher as a typographic catalogue, not cards. */
+.programs {background:#1A1E1B;padding-top:clamp(100px,11vw,190px)}
+.programs-head {grid-template-columns:3fr 8fr;margin-bottom:clamp(65px,7vw,120px)}
+.programs-head h2 {font-size:clamp(105px,11vw,190px);line-height:.8;letter-spacing:-.04em}
+.programs-layout {gap:clamp(30px,3vw,75px)}
+.program-tab {border-color:rgba(255,255,255,.18);min-height:98px;transition:background .18s var(--ease),color .18s var(--ease),padding .18s var(--ease)}
+.program-tab:hover {background:rgba(255,255,255,.04)}
+.program-tab.selected {background:var(--bone);color:var(--carbon)}
+.program-tab.selected .program-index {color:var(--oxide-dark)}
+.program-photo {position:relative}
+.program-photo img {filter:saturate(.63) contrast(1.08)}
+.program-info {background:#EAE5DA;color:var(--carbon)}
+.program-info .meta,.program-index {color:var(--oxide-dark)}
+.program-info h3 {letter-spacing:-.03em}
+.program-info p {color:#333731}
+.programs-foot {margin-top:70px}
+/* Secondary immersion becomes a restrained, large-format image interlude. */
+.immersion {min-height:720px}
+.immersion-photo img {filter:saturate(.5) contrast(1.07) brightness(.75)}
+.immersion-text h2 {letter-spacing:-.04em}
+/* Conversions: warm editorial lead page, form affordances and trust. */
+.visit {background:var(--paper);color:var(--carbon);padding-top:clamp(100px,11vw,190px)}
+.visit-heading h2 {letter-spacing:-.04em}
+.visit-guidance {background:#E0D9CC;border-color:#D1C9BC}
+.visit-grid {gap:clamp(45px,6vw,100px)}
+.visit-form-wrap {background:var(--carbon);color:var(--bone);border:none;box-shadow:none}
+.visit-form :is(input,select) {border-radius:0;min-height:50px}
+.visit-form :is(input,select):focus-visible {outline-offset:2px}
+.visit-form label {font-weight:700}
+.cta-form {background:var(--oxide);color:#fff;min-height:60px}
+.form-privacy {color:#CDCDC5}
+/* Membership as a pricing instrument, NEVER a fabricated price promise. */
+.membership {background:var(--bone);color:var(--carbon);}
+.membership-title h2 {letter-spacing:-.035em}
+.membership-controls {border:1px solid rgba(16,20,17,.20);background:#EDE8DD}
+.price-result {background:var(--carbon);color:var(--bone);border:none}
+.price-category {color:#D7D9D0}
+.demo-disclaimer {font-size:13px;line-height:1.65}
+.price-cta:hover {background:var(--oxide-dark)}
+.segmented button,.duration-choices button {min-height:48px}
+/* Optional utility takes second place to the visitor CTA. */
+.lab-section {background:#242823}
+.lab-panel {background:var(--bone);color:var(--carbon)}
+.lab-form input,.lab-form select {min-height:48px}
+.times {background:var(--carbon);color:var(--bone)}
+.time-item {border-color:rgba(255,255,255,.18)}
+.location {background:var(--paper);color:var(--carbon)}
+.branch-tabs button {min-height:105px}
+.branch-tabs button.active {background:var(--carbon);color:var(--bone)}
+.loc-selected {background:var(--bone)}
+.faq-row button {min-height:70px}
+.proof-note {border-top:1px solid var(--black-rule)}
+/* A powerful closing action with no decorative cards. */
+.closing {background:var(--oxide);color:#fff;padding-top:clamp(100px,10vw,175px)}
+.closing h2 {font-size:clamp(110px,15.5vw,276px);line-height:.73;letter-spacing:-.055em;margin-block:clamp(65px,8vw,135px)}
+.closing h2 span {-webkit-text-stroke:2px #fff;color:transparent}
+.closing-action {border-top:1px solid rgba(255,255,255,.45)}
+.closing-action p {font-size:clamp(16px,1.3vw,21px);line-height:1.55}
+.cta-light {background:var(--bone);color:var(--carbon);border-color:var(--bone)}
+.cta-light:hover {background:var(--carbon);border-color:var(--carbon);color:var(--bone)}
+.closing-bottom {border-color:rgba(255,255,255,.45)}
+.closing .wordmark-symbol {background:#fff;color:var(--oxide-dark)}
+.closing .wordmark-text small {color:#FFEBE5}
+.closing-disclaimer {color:#FFE6DF;font-size:12px;line-height:1.6}
+/* Responsive layout is re-composed intentionally; never squeeze desktop layers. */
+@media (min-width:1600px) {
+  .hero-grid {grid-template-rows:minmax(800px,calc(100svh - 166px))}
+  .hero h1 {font-size:clamp(152px,11.7vw,212px)}
+}
+@media (max-width:1180px) {
+  .hero-grid {grid-template-rows:minmax(660px,75svh)}
+  .hero-left {grid-column:1/10}
+  .hero-art {grid-column:6/-1}
+  .hero h1 {font-size:clamp(93px,12.5vw,160px)}
+  .hero-side-note {display:none}
+  .bt-cinema-headline h2 {font-size:clamp(85px,12vw,150px)}
+}
+@media (max-width:800px) {
+  .header {height:76px}
+  .wordmark-symbol {width:44px;height:44px}
+  .hero-identity {font-size:10px}
+  .hero-grid {grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:620px}
+  .hero-left {grid-column:1/9;grid-row:1;padding-block:75px 52px}
+  .hero-art {grid-column:3/-1;grid-row:1;margin-right:calc(-1 * var(--pad));opacity:.93}
+  .hero h1 {font-size:clamp(88px,15vw,135px);margin:115px 0 45px}
+  .hero-photo-vignette {background:linear-gradient(90deg,#101411,rgba(16,20,17,.55) 68%,transparent),linear-gradient(0deg,rgba(16,20,17,.82),transparent 50%)}
+  .hero-prose {max-width:360px}
+  .hero-footer span:last-child {display:none}
+  .credible-track {overflow-x:auto;scrollbar-width:none;justify-content:flex-start}
+  .bt-cinema {height:250svh}
+  .bt-cinema-stage {height:100svh;min-height:590px}
+  .bt-cinema-headline h2 {font-size:clamp(78px,16vw,135px)}
+  .bt-cinema-headline p {font-size:16px}
+  .manifesto h2 {font-size:clamp(79px,13vw,122px)}
+  .manifesto-bottom {gap:45px}
+  .programs-head h2 {font-size:clamp(90px,12vw,130px)}
+  .closing h2 {font-size:clamp(110px,15vw,175px)}
+}
+@media (max-width:560px) {
+  :root {--pad:20px}
+  .demo-ribbon {font-size:8px;gap:10px}
+  .demo-ribbon button {white-space:normal;text-align:right;font-size:8px;min-width:90px}
+  .header {height:72px}
+  .wordmark-symbol {width:41px;height:41px}
+  .wordmark-text strong {font-size:27px}
+  .wordmark-text small {font-size:8px}
+  .hero-identity {padding-block:14px;font-size:9px;gap:9px;letter-spacing:.07em}
+  .hero-identity>span:last-child {font-size:9px}
+  .hero-grid {grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:calc(100svh - 152px);min-height:650px;max-height:840px}
+  .hero-left {grid-column:1/-1;grid-row:1;padding:60px 0 55px}
+  .hero-art {grid-column:1/-1;grid-row:1;margin-left:calc(-1 * var(--pad));margin-right:calc(-1 * var(--pad));opacity:.85}
+  .hero-image-move img {object-position:68% center;filter:saturate(.6) contrast(1.13) brightness(.48)}
+  .hero-photo-vignette {background:linear-gradient(0deg,#101411 0%,rgba(16,20,17,.18) 50%,rgba(16,20,17,.62) 100%),linear-gradient(90deg,rgba(16,20,17,.36),transparent)}
+  .hero-overtitle {font-size:10px;line-height:1.5;letter-spacing:.17em}
+  .hero h1 {font-size:clamp(69px,19vw,120px);line-height:.79;margin:76px 0 30px;letter-spacing:-.032em}
+  .hero h1 .line-outline>span {-webkit-text-stroke:1px var(--bone)}
+  .hero-prose {font-size:15px;line-height:1.5;max-width:300px;margin-bottom:22px}
+  .cta {min-height:56px;font-size:10px;padding-left:18px;gap:10px}
+  .cta-symbol {width:52px;min-height:56px}
+  .hero-vertical,.hero-corner-mark {display:none}
+  .hero-photo-bottom {bottom:16px;left:20px;right:20px;font-size:9px}
+  .hero-footer {font-size:9px;padding:20px 0;gap:16px}
+  .credible-track {font-size:19px;padding-block:20px;gap:16px}
+  .divider-diamond {width:5px;height:5px}
+  .bt-cinema {height:250svh}
+  .bt-cinema-stage {height:100svh;min-height:610px;padding:26px 20px}
+  .bt-cinema-north {font-size:9px;letter-spacing:.1em;gap:10px}
+  .bt-cinema-north span:last-child {text-align:right}
+  .bt-cinema-visual img {object-position:64% center}
+  .bt-cinema-shade {background:linear-gradient(0deg,rgba(7,10,8,.85),transparent 75%),linear-gradient(90deg,rgba(7,10,8,.57),transparent)}
+  .bt-cinema-giant {right:-18%;bottom:22%;font-size:400px}
+  .bt-cinema-headlines {min-height:310px}
+  .bt-cinema-kicker {font-size:9px;letter-spacing:.12em;margin-bottom:20px}
+  .bt-cinema-label {font-size:10px}
+  .bt-cinema-headline h2 {font-size:clamp(68px,18vw,98px);line-height:.82;white-space:normal;max-width:94vw}
+  .bt-cinema-headline p {font-size:15px;max-width:270px}
+  .bt-cinema-bottom {font-size:9px;align-items:flex-end}
+  .bt-cinema-bottom>a {min-height:44px;max-width:130px;gap:7px;text-align:right}
+  .bt-cinema-bottom>span {max-width:125px;line-height:1.55}
+  .bt-cinema-progress {display:none}
+  .manifesto h2 {font-size:clamp(62px,13vw,100px);line-height:.86;margin-block:70px}
+  .manifesto .underlined {white-space:normal}
+  .manifesto-bottom {grid-template-columns:1fr;gap:35px}
+  .manifesto-photo {height:420px}
+  .manifesto-index {font-size:55px;margin-bottom:26px}
+  .programs-head {grid-template-columns:1fr}
+  .programs-head h2 {font-size:clamp(80px,16vw,125px)}
+  .program-tab {min-height:78px}
+  .program-info {padding:28px}
+  .immersion {min-height:600px}
+  .visit,.membership,.location {padding-top:90px}
+  .closing {padding-top:95px}
+  .closing h2 {font-size:clamp(80px,18.6vw,130px);line-height:.8;letter-spacing:-.045em;margin-block:65px}
+  .mobile-contact {z-index:90}
+}
+@media (prefers-reduced-motion:reduce) {
+  html {scroll-behavior:auto}
+  *,*::before,*::after {animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .bt-cinema {height:auto;min-height:0}
+  .bt-cinema-stage {height:auto;min-height:610px;position:relative}
+  .bt-cinema-frame {opacity:0!important;transform:none!important;will-change:auto}
+  .bt-cinema-frame-1 {opacity:1!important}
+  .bt-cinema-headline {opacity:0!important}
+  .bt-cinema-headline-1 {opacity:1!important}
+  .bt-cinema-giant {transform:none!important}
+}
+/* Contrast corrections for existing owner's functional UI, not decorative overrides. */
+.program-info li {color:#343A34;border-bottom-color:#C8C0B3}
+.program-info .quiet-button {color:#171D18}
+.program-info .quiet-button:hover {color:var(--oxide-dark)}
+.visit-heading>p {color:#424A42}
+.visit-heading h2 em {color:var(--oxide-dark)}
+.visit-grid {border-color:var(--black-rule)}
+.visit-guidance {border-color:#C8C0B3}
+.visit-guidance .vertical-index {color:#525A50}
+.visit-guidance .days-list>div {border-color:#B6AD9F}
+.visit-guidance .days-list span {color:#A33020}
+.visit-guidance .days-list strong {color:var(--carbon)}
+.visit-guidance .days-list p {color:#4B5149}
+.visit-guidance .guided-note {color:#4A5148}
+.visit-form-wrap {padding-right:clamp(25px,4.4vw,75px)}
+.lab-panel {background:#252A25;color:var(--bone)}
+.times {background:var(--paper);color:var(--carbon)}
+.times .times-lead h2 em {color:var(--oxide-dark)}
+.location {background:var(--carbon);color:var(--bone)}
+.loc-branches>p {color:#D1D6CD}
+.branch-tabs button.active {color:var(--carbon)}
+.loc-selected {background:#242824;color:var(--bone)}
+.loc-address p {color:#D1D6CD}
+.faq-row>button {color:var(--bone)}
+.faq-answer p {color:#D1D6CD}
+@media(max-width:560px) {
+  .visit-form-wrap {padding:30px 20px}
+  .hero h1 {font-size:clamp(66px,18vw,105px)}
+}
+/* Editorial metadata never drops below 12px, including narrow-screen labels. */
+:where(.demo-ribbon,.demo-ribbon button,.wordmark-text small,.hero-identity,.hero-overtitle,.hero-photo-bottom,.hero-footer,.bt-cinema-north,.bt-cinema-kicker,.bt-cinema-label,.bt-cinema-bottom,.bt-cinema-bottom>a,.asset-caption,.label,.meta,.eyebrow,.closing-disclaimer,.loc-address>span,.branch-tabs small,.program-photo>span,.program-info li,.program-tab .program-index,.time-item small,.faq-row>button span,.field label,.form-privacy) {font-size:12px}
+@media(max-width:560px) {
+ .hero-footer>span:nth-child(2) {display:none}
+ .wordmark-text small {letter-spacing:.05em}
+ .demo-ribbon {line-height:1.35}
+}

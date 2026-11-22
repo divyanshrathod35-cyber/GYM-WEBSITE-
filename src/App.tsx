@@ -1,3 +1,4 @@
+import CinematicSequence from './components/CinematicSequence';
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { gymConfig, type Goal, type LocationId, type Months, type PlanType } from './config/gymConfig';
@@ -87,5 +88,5 @@ function MobileContact() { return <aside className="mobile-contact" aria-label="
 export default function App() {
   const [choice, setChoice] = useState<{ goal: Goal; revision: number }>({ goal: 'Beginner Kickstart', revision: 0 });
   const onGoal = (goal: Goal) => { setChoice(prev => ({ goal, revision: prev.revision + 1 })); document.getElementById('visit')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' }); };
-  return <><a className="skip-link" href="#main">Skip to main content</a><ScrollLine /><Header /><main id="main"><Hero /><CredibilityBand /><Manifesto /><Programs onGoal={onGoal} /><Immersion /><Trial prefilled={choice.goal} revision={choice.revision} /><Membership /><FitnessLab onGoal={onGoal} /><Times /><LocationAndFaq /></main><Closing /><MobileContact /></>;
+  return <><a className="skip-link" href="#main">Skip to main content</a><ScrollLine /><Header /><main id="main"><Hero /><CredibilityBand /><Manifesto /><Programs onGoal={onGoal} /><CinematicSequence /><Immersion /><Trial prefilled={choice.goal} revision={choice.revision} /><Membership /><FitnessLab onGoal={onGoal} /><Times /><LocationAndFaq /></main><Closing /><MobileContact /></>;
 }

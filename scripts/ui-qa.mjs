@@ -77,6 +77,16 @@ try {
     assert(result.heroImage, 'Hero imagery failed to load at ' + width);
     const screenshot = await request('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
     fs.writeFileSync(path.join(output, 'bodytech-' + width + '.png'), Buffer.from(screenshot.result.data, 'base64'));
+    if (width === 390 || width === 1440) {
+      const metrics = await request('Page.getLayoutMetrics');
+      const contentHeight = Math.min(Math.ceil(metrics.result.cssContentSize?.height || metrics.result.contentSize?.height || 900), 15000);
+      const full = await request('Page.captureScreenshot', {
+        format: 'png',
+        captureBeyondViewport: true,
+        clip: { x: 0, y: 0, width, height: contentHeight, scale: 1 },
+      });
+      fs.writeFileSync(path.join(output, 'bodytech-full-' + width + '.png'), Buffer.from(full.result.data, 'base64'));
+    }
     report.viewports.push(result);
     console.log('PASS ' + width + 'px: layout, headlines, hero image, anchors');
   }

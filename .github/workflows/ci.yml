@@ -31,4 +31,20 @@ jobs:
           }
       - name: Verify Vercel static Build Output API package
         run: node scripts/prepare-vercel-static.mjs
-
+      - name: Run Chrome viewport acceptance
+        shell: bash
+        run: |
+          export CHROME_BIN="$(command -v google-chrome || command -v chromium || true)"
+          if [ -z "$CHROME_BIN" ]; then
+            echo "Chrome/Chromium is required for visual QA"
+            exit 1
+          fi
+          npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/bodytech-preview.log 2>&1 &
+          node scripts/ui-qa.mjs
+      - name: Upload viewport screenshots and QA report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bodytech-v6-viewport-evidence
+          path: evidence/v6/
+          if-no-files-found: ignore

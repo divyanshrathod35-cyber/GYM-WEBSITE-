@@ -307,3 +307,32 @@ section[id] {scroll-margin-top:86px}
  .wordmark-text small {letter-spacing:.05em}
  .demo-ribbon {line-height:1.35}
 }
+
+/* BODYTECH / Layout correction: grid gap containment and short-viewports / 2026-11-22 */
+@media (min-width: 1081px) {
+  .programs-layout {
+    grid-template-columns: minmax(0, 34fr) minmax(0, 66fr);
+  }
+}
+@media (min-width: 761px) and (max-width: 1080px) {
+  .programs-layout {
+    grid-template-columns: minmax(0, 36fr) minmax(0, 64fr);
+  }
+}
+@media (max-width: 760px) {
+  .programs-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .credible-track {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+@media (max-height: 680px) {
+  .bt-cinema-stage { min-height: 0; }
+  .bt-cinema-headlines { min-height: clamp(200px, 38svh, 280px); }
+  .bt-cinema-kicker { margin-bottom: 12px; }
+  .bt-cinema-headline h2 { font-size: clamp(60px, 12svh, 100px); }
+}
